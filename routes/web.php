@@ -7,18 +7,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Ini adalah rute autentikasi dari Breeze
+// Baris ini yang hilang dan menyebabkan error
+require __DIR__.'/auth.php';
+
 // Grup untuk semua route backend/admin
 Route::prefix('admin')->group(function () {
-
     // Route untuk dashboard
     Route::get('/dashboard', function () {
         return "Ini halaman dashboard admin";
-    })->name('admin.dashboard');
+    })->name('admin.dashboard')->middleware('auth'); // Tambahkan middleware auth
 
     // Route untuk CRUD data penduduk
-    // URL yang akan dibuat: admin/penduduk, admin/penduduk/create, dll.
-    Route::resource('penduduk', PendudukController::class);
+    Route::resource('penduduk', PendudukController::class)->middleware('auth');
 });
-
-
-// ->middleware(['auth'])
