@@ -38,6 +38,7 @@
     34 => 'Flasher\\Laravel\\FlasherServiceProvider',
     35 => 'Flasher\\Toastr\\Laravel\\FlasherToastrServiceProvider',
     36 => 'App\\Providers\\AppServiceProvider',
+    37 => 'App\\Providers\\VoltServiceProvider',
   ),
   'eager' => 
   array (
@@ -62,6 +63,7 @@
     18 => 'Flasher\\Laravel\\FlasherServiceProvider',
     19 => 'Flasher\\Toastr\\Laravel\\FlasherToastrServiceProvider',
     20 => 'App\\Providers\\AppServiceProvider',
+    21 => 'App\\Providers\\VoltServiceProvider',
   ),
   'deferred' => 
   array (
