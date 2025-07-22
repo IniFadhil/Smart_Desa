@@ -78,7 +78,7 @@ class PendudukController extends Controller
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:ds_penduduk,email,' . $penduduk->id,
             // Tambahkan validasi lain sesuai kebutuhan
-        ]);
+        ], []);
 
         $penduduk->update($validatedData);
 
