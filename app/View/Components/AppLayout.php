@@ -12,6 +12,7 @@ class AppLayout extends Component
      */
     public function render(): View
     {
-        return view('layouts.app');
+        // Pastikan path ini menunjuk ke lokasi layout backend yang baru
+        return view('backend.layouts.app');
     }
 }
