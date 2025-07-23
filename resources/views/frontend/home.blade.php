@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app') {{-- Menggunakan layout khusus untuk frontend --}}
+@extends('components.layouts.app') {{-- BENAR --}}
 
 @section('content')
     {{-- Memberitahu layout di mana menempatkan konten ini --}}
