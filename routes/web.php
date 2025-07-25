@@ -77,8 +77,73 @@ Route::get('/gambaran-umum-desa', function () {
 
 // Rute untuk halaman Kondisi Geografis
 Route::get('/kondisi-geografis', function () {
-    return view('frontend.profile.geografis'); // <--- PASTIKAN INI ADALAH 'frontend.profile.geografis'
+    return view('frontend.profile.geografis');
 })->name('kondisi-geografis');
+
+
+// Grup Rute untuk SUKET (Surat Keterangan)
+Route::prefix('suket')->name('suket.')->group(function () {
+    // Rute untuk Formulir Surat Keterangan Kematian
+    Route::get('/sk-kematian', function () {
+        return view('frontend.SUKET.SKM');
+    })->name('sk-kematian');
+
+    // Rute untuk Formulir Surat Keterangan Usaha
+    Route::get('/sk-usaha', function () {
+        return view('frontend.SUKET.SKU');
+    })->name('sk-usaha');
+
+    // Rute untuk Formulir Surat Keterangan Beda Nama
+    Route::get('/sk-beda-nama', function () {
+        return view('frontend.SUKET.SKBN');
+    })->name('sk-beda-nama');
+
+    // Rute untuk Formulir Surat Keterangan Tidak Mampu
+    Route::get('/sk-tidak-mampu', function () {
+        return view('frontend.SUKET.SKTM');
+    })->name('sk-tidak-mampu');
+
+    // Rute untuk Formulir Surat Keterangan Penghasilan
+    Route::get('/sk-penghasilan', function () {
+        return view('frontend.SUKET.SKP');
+    })->name('sk-penghasilan');
+
+    // Rute untuk Formulir Surat Keterangan Status Pernikahan
+    Route::get('/sk-status-pernikahan', function () {
+        return view('frontend.SUKET.SKSP');
+    })->name('sk-status-pernikahan');
+
+    // Rute untuk Formulir Surat Keterangan Riwayat Tanah
+    Route::get('/sk-riwayat-tanah', function () {
+        return view('frontend.SUKET.SKRT');
+    })->name('sk-riwayat-tanah');
+
+    // Rute untuk Formulir Surat Keterangan Kelahiran
+    Route::get('/sk-kelahiran', function () {
+        return view('frontend.SUKET.SKL');
+    })->name('sk-kelahiran');
+
+    // Rute untuk Formulir Surat Keterangan Ahli Waris
+    Route::get('/sk-ahli-waris', function () {
+        return view('frontend.SUKET.SKAW');
+    })->name('sk-ahli-waris');
+
+    // Rute untuk Formulir Surat Keterangan Lain (Sapu Jagat)
+    Route::get('/sk-lain', function () {
+        return view('frontend.SUKET.SJ');
+    })->name('sk-lain');
+});
+
+
+// Rute untuk halaman Galeri Foto
+Route::get('/galeri-foto', function () {
+    return view('frontend.foto');
+})->name('galeri-foto');
+
+    // Rute untuk halaman Galeri Video
+    Route::get('/galeri-vidio', function () {
+        return view('frontend.vidio'); 
+    })->name('galeri-video');
 
 
 // Route BackEnd //
