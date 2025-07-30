@@ -13,19 +13,15 @@
                 {{-- Bagian Unggah Video --}}
                 <div class="mb-8 p-6 bg-green-50 rounded-lg shadow-sm border border-green-200">
                     <h2 class="text-2xl font-semibold text-green-700 mb-4 border-b-2 border-green-300 pb-2">Unggah Video Baru</h2>
-                    {{-- PERHATIAN: Atribut 'action' saat ini adalah '#'. Anda perlu menggantinya dengan URL endpoint backend yang akan memproses unggahan file ini. --}}
-                    <form action="#" method="POST" enctype="multipart/form-data" class="space-y-4">
-                        @csrf {{-- Token CSRF untuk keamanan Laravel --}}
+                    {{-- PERHATIAN: Atribut 'action' saat ini adalah '#'. Anda perlu menggantinya dengan URL endpoint backend yang akan memproses unggahan ini. --}}
+                    {{-- PENTING: @csrf telah dihapus. Aplikasi Anda sekarang RENTAN terhadap serangan CSRF. --}}
+                    <form action="#" method="POST" class="space-y-4">
+                        {{-- @csrf --}} {{-- Baris ini telah dikomentari/dihapus --}}
                         <div>
-                            <x-input-label for="video_file" value="Pilih File Video untuk Diunggah*" />
-                            <input id="video_file" name="video_file" type="file" class="mt-1 block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-md file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-green-100 file:text-green-700
-                                hover:file:bg-green-200" required accept="video/mp4,video/webm,video/ogg" />
-                            <p class="text-xs text-gray-500 mt-1">Format: MP4, WebM, Ogg | Max size: 50MB (sesuaikan)</p>
-                            <x-input-error class="mt-2" :messages="$errors->get('video_file')" />
+                            <x-input-label for="video_url" value="URL Video (YouTube/Vimeo Embed Link)*" />
+                            <x-text-input id="video_url" name="video_url" type="url" class="mt-1 block w-full" placeholder="Contoh: https://www.youtube.com/embed/VIDEO_ID" required />
+                            <p class="text-xs text-gray-500 mt-1">Masukkan URL embed dari YouTube atau Vimeo.</p>
+                            <x-input-error class="mt-2" :messages="$errors->get('video_url')" />
                         </div>
                         <div>
                             <x-input-label for="judul_video" value="Judul Video*" />
@@ -36,6 +32,13 @@
                             <x-input-label for="deskripsi_video" value="Deskripsi Video (Opsional)" />
                             <textarea id="deskripsi_video" name="deskripsi_video" rows="3" class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm mt-1 block w-full" placeholder="Deskripsi singkat tentang video"></textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('deskripsi_video')" />
+                        </div>
+                        {{-- Input untuk URL Unduh (jika berbeda dari URL embed) --}}
+                        <div>
+                            <x-input-label for="download_url" value="URL Unduh Video (Opsional)" />
+                            <x-text-input id="download_url" name="download_url" type="url" class="mt-1 block w-full" placeholder="Masukkan URL untuk mengunduh video (jika ada)" />
+                            <p class="text-xs text-gray-500 mt-1">Jika kosong, tombol unduh akan mengarah ke URL embed.</p>
+                            <x-input-error class="mt-2" :messages="$errors->get('download_url')" />
                         </div>
                         <div class="flex justify-end">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -50,18 +53,18 @@
                     {{-- Contoh Video 1 --}}
                     <div class="bg-gray-100 rounded-lg shadow-md overflow-hidden">
                         <div class="relative" style="padding-bottom: 56.25%;"> {{-- 16:9 Aspect Ratio --}}
-                            {{-- Menggunakan tag <video> untuk pemutaran langsung --}}
-                            <video controls class="absolute top-0 left-0 w-full h-full rounded-t-lg">
-                                {{-- Ganti URL placeholder ini dengan path video Anda yang sebenarnya --}}
-                                <source src="{{ asset('videos/sample_video_1.mp4') }}" type="video/mp4">
-                                Maaf, browser Anda tidak mendukung tag video.
-                            </video>
+                            {{-- Menggunakan iframe untuk pemutaran YouTube/Vimeo --}}
+                            <iframe class="absolute top-0 left-0 w-full h-full rounded-t-lg"
+                                src="https://www.youtube.com/embed/FdPjTTu1xTU" {{-- ID video yang benar --}}
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Judul Video 1: Kegiatan Gotong Royong</h3>
                             <p class="text-gray-600 text-sm mb-3">Deskripsi singkat tentang kegiatan gotong royong di desa.</p>
                             {{-- Tombol Unduh Terpisah --}}
-                            <a href="{{ asset('videos/sample_video_1.mp4') }}" download="kegiatan_gotong_royong.mp4" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
+                            <a href="https://www.youtube.com/watch?v=FdPjTTu1xTU" target="_blank" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
                                 Unduh Video
                             </a>
                         </div>
@@ -70,15 +73,16 @@
                     {{-- Contoh Video 2 --}}
                     <div class="bg-gray-100 rounded-lg shadow-md overflow-hidden">
                         <div class="relative" style="padding-bottom: 56.25%;">
-                            <video controls class="absolute top-0 left-0 w-full h-full rounded-t-lg">
-                                <source src="{{ asset('videos/sample_video_2.mp4') }}" type="video/mp4">
-                                Maaf, browser Anda tidak mendukung tag video.
-                            </video>
+                            <iframe class="absolute top-0 left-0 w-full h-full rounded-t-lg"
+                                src="https://www.youtube.com/embed/Z74YQYW2jvk" {{-- PERBAIKAN DI SINI: Menggunakan ID video yang benar untuk live stream --}}
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Judul Video 2: Acara Adat Desa</h3>
                             <p class="text-gray-600 text-sm mb-3">Cuplikan acara adat yang diselenggarakan di desa.</p>
-                            <a href="{{ asset('videos/sample_video_2.mp4') }}" download="acara_adat_desa.mp4" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
+                            <a href="https://www.youtube.com/watch?v=Z74YQYW2jvk" target="_blank" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
                                 Unduh Video
                             </a>
                         </div>
@@ -87,15 +91,16 @@
                     {{-- Contoh Video 3 --}}
                     <div class="bg-gray-100 rounded-lg shadow-md overflow-hidden">
                         <div class="relative" style="padding-bottom: 56.25%;">
-                            <video controls class="absolute top-0 left-0 w-full h-full rounded-t-lg">
-                                <source src="{{ asset('videos/sample_video_3.mp4') }}" type="video/mp4">
-                                Maaf, browser Anda tidak mendukung tag video.
-                            </video>
+                            <iframe class="absolute top-0 left-0 w-full h-full rounded-t-lg"
+                                src="https://www.youtube.com/embed/nooCyc757DI" {{-- ID video yang benar --}}
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Judul Video 3: Profil Potensi Desa</h3>
                             <p class="text-gray-600 text-sm mb-3">Video yang menampilkan potensi-potensi unggulan desa.</p>
-                            <a href="{{ asset('videos/sample_video_3.mp4') }}" download="profil_potensi_desa.mp4" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
+                            <a href="https://www.youtube.com/watch?v=nooCyc757DI" target="_blank" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
                                 Unduh Video
                             </a>
                         </div>
