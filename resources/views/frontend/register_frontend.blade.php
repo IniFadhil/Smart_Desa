@@ -16,18 +16,39 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
-            {{-- Input Nama --}}
+            {{-- Input Nama Lengkap --}}
             <div>
-                <x-input-label for="nik" value="Nik" class="sr-only" />
-                <x-text-input id="nik" class="block mt-1 w-full" type="nik" name="nik" :value="old('name')" required autofocus autocomplete="name" placeholder="Masukkan Nik Anda" />
-                <x-input-error :messages="$errors->get('nik')" class="mt-2" />
+                <x-input-label for="name" value="Nama Lengkap" class="sr-only" />
+                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="Masukkan Nama Lengkap Anda" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
+            {{-- Input NIK --}}
+            <div class="mt-4">
+                <x-input-label for="nik" value="NIK" class="sr-only" />
+                <x-text-input id="nik" class="block mt-1 w-full" type="text" name="nik" :value="old('nik')" required autocomplete="nik" placeholder="Masukkan NIK Anda" />
+                <x-input-error :messages="$errors->get('nik')" class="mt-2" />
+            </div>
+            
             {{-- Input Email --}}
             <div class="mt-4">
                 <x-input-label for="email" value="Email" class="sr-only" />
                 <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="Masukkan Alamat Email Anda" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            {{-- Input No. Telepon --}}
+            <div class="mt-4">
+                <x-input-label for="no_telepon" value="No. Telepon" class="sr-only" />
+                <x-text-input id="no_telepon" class="block mt-1 w-full" type="text" name="no_telepon" :value="old('no_telepon')" required autocomplete="tel" placeholder="Masukkan No. Telepon Anda" />
+                <x-input-error :messages="$errors->get('no_telepon')" class="mt-2" />
+            </div>
+
+            {{-- Input Alamat --}}
+            <div class="mt-4">
+                <x-input-label for="alamat" value="Alamat" class="sr-only" />
+                <textarea id="alamat" name="alamat" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required placeholder="Masukkan Alamat Lengkap Anda">{{ old('alamat') }}</textarea>
+                <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
             </div>
 
             {{-- Input Password --}}
