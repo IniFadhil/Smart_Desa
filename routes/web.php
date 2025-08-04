@@ -124,7 +124,48 @@ Route::get('/pengumuman', function () {
     // Laravel mencari file 'pengumuman.blade.php' di dalam folder 'frontend'
     return view('frontend.pengumuman');
 })->name('pengumuman.index');
+Route::get('/agenda', function () {
+    // Arahkan langsung ke file 'resources/views/frontend/agenda.blade.php'
+    return view('frontend.agenda', [
+        'agendaAkanDatang' => collect([]),
+        'agendaSudahLewat' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 5),
+    ]);
+})->name('agenda.index');
 
+Route::get('/potensi-desa/kuliner', function () {
+    return view('frontend.potdes.kuliner');
+})->name('potensi.kuliner');
+
+
+// Rute untuk halaman Wisata
+Route::get('/potensi-desa/wisata', function () {
+    // Pastikan Anda sudah membuat file wisata.blade.php di dalam folder potdes
+    return view('frontend.potdes.wisata'); // Mengarah ke resources/views/frontend/potdes/wisata.blade.php
+})->name('potensi.wisata');
+
+Route::get('/potensi-desa/wisata/{slug}', function ($slug) {
+    // Nanti, backend akan menggunakan $slug untuk mengambil data dari database
+    return view('frontend.potdes.detail-wisata');
+})->name('potensi.wisata.detail');
+
+// Rute untuk halaman Kepala Desa
+Route::get('/pemerintah-desa/kepala_desa', function () {
+    return view('frontend.pemdes.kepala_desa');
+})->name('pemerintah.kepala_desa');
+
+// TAMBAHKAN RUTE INI untuk halaman Perangkat Desa
+Route::get('/pemerintah-desa/perangkat_desa', function () {
+    return view('frontend.pemdes.perangkat_desa');
+})->name('pemerintah.perangkat_desa');
+
+// Rute untuk halaman Kantor Desa
+Route::get('/profil-desa/kantor-desa', function () {
+    return view('frontend.pemdes.kantor_desa');
+})->name('profil.kantor-desa');
+
+Route::get('/pemerintah-desa/struktur_organisasi', function () {
+    return view('frontend.pemdes.struktur_organisasi'); 
+})->name('pemerintah.struktur_organisasi');
 
 // --- Route BackEnd --- //
 Route::prefix('backoffice')->name('backend.')->group(function () {

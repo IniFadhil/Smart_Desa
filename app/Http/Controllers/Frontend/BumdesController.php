@@ -34,7 +34,7 @@ class BumdesController extends Controller
     {
         // Nanti, data ini bisa Anda ambil dari database
         $profil = (object) [
-            'nama' => 'BUMDES Jaya Makmur',
+            'nama' => 'BUMDES DESA SUKAMANDI',
             'sejarah' => 'Berdiri sejak tahun 2018, BUMDES Jaya Makmur didirikan dengan semangat untuk memajukan perekonomian Desa Subang melalui pengelolaan potensi lokal. Kami berfokus pada pengembangan produk pertanian, kerajinan tangan, dan jasa pariwisata untuk meningkatkan kesejahteraan masyarakat.',
             'visi' => 'Menjadi pilar utama dalam kemandirian ekonomi desa yang berdaya saing, inovatif, dan berkelanjutan.',
             'misi' => [

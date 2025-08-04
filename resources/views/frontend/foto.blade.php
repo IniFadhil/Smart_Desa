@@ -13,7 +13,6 @@
                 {{-- Bagian Unggah Foto --}}
                 <div class="mb-8 p-6 bg-green-50 rounded-lg shadow-sm border border-green-200">
                     <h2 class="text-2xl font-semibold text-green-700 mb-4 border-b-2 border-green-300 pb-2">Unggah Foto Baru</h2>
-                    {{-- PERHATIAN: Atribut 'action' saat ini adalah '#'. Anda perlu menggantinya dengan URL endpoint backend yang akan memproses unggahan file ini. --}}
                     <form action="#" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf {{-- Token CSRF untuk keamanan Laravel --}}
                         <div>
@@ -32,6 +31,11 @@
                             <x-text-input id="judul_foto" name="judul_foto" type="text" class="mt-1 block w-full" placeholder="Masukkan judul foto" />
                             <x-input-error class="mt-2" :messages="$errors->get('judul_foto')" />
                         </div>
+                        <div>
+                            <x-input-label for="caption_foto" value="Caption Foto (Opsional)" />
+                            <textarea id="caption_foto" name="caption" rows="3" class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm mt-1 block w-full" placeholder="Masukkan caption atau deskripsi singkat foto"></textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('caption')" />
+                        </div>
                         <div class="flex justify-end">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Unggah
@@ -43,44 +47,31 @@
                 {{-- Bagian Galeri Foto --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {{-- Contoh Foto 1 --}}
-                    <div class="relative overflow-hidden rounded-lg shadow-md group">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden group">
                         <img src="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+1" alt="Deskripsi Foto 1" class="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold mb-2">Judul Foto 1</p>
-                            {{-- Tombol Download --}}
-                            <a href="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+1" download="foto_desa_1.jpg" class="px-3 py-1 bg-white text-green-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">
-                                Unduh
-                            </a>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600">Ini adalah caption untuk foto desa 1.</p>
                         </div>
                     </div>
                     {{-- Contoh Foto 2 --}}
-                    <div class="relative overflow-hidden rounded-lg shadow-md group">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden group">
                         <img src="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+2" alt="Deskripsi Foto 2" class="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold mb-2">Judul Foto 2</p>
-                            <a href="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+2" download="foto_desa_2.jpg" class="px-3 py-1 bg-white text-green-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">
-                                Unduh
-                            </a>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600">Ini adalah caption untuk foto desa 2.</p>
                         </div>
                     </div>
                     {{-- Contoh Foto 3 --}}
-                    <div class="relative overflow-hidden rounded-lg shadow-md group">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden group">
                         <img src="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+3" alt="Deskripsi Foto 3" class="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold mb-2">Judul Foto 3</p>
-                            <a href="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+3" download="foto_desa_3.jpg" class="px-3 py-1 bg-white text-green-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">
-                                Unduh
-                            </a>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600">Ini adalah caption untuk foto desa 3.</p>
                         </div>
                     </div>
                     {{-- Contoh Foto 4 --}}
-                    <div class="relative overflow-hidden rounded-lg shadow-md group">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden group">
                         <img src="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+4" alt="Deskripsi Foto 4" class="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold mb-2">Judul Foto 4</p>
-                            <a href="https://placehold.co/600x400/E0F2F7/000000?text=Foto+Desa+4" download="foto_desa_4.jpg" class="px-3 py-1 bg-white text-green-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors">
-                                Unduh
-                            </a>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600">Ini adalah caption untuk foto desa 4.</p>
                         </div>
                     </div>
                 </div>
