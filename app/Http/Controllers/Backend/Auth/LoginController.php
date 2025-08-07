@@ -19,9 +19,11 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // TAMBAHKAN VALIDASI UNTUK CAPTCHA
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'captcha' => 'required|captcha' // Aturan validasi captcha
         ]);
 
 
@@ -32,51 +34,43 @@ class LoginController extends Controller
                 'password' => $request->password,
                 'status' => 1,
             ];
-            $cek = Auth::guard('admin')->attempt($credentials);
-            // dd($cek);
+
             if (Auth::guard('admin')->attempt($credentials)) {
                 $user = Auth::guard('admin')->user();
-                //
-                // dd($user);
-
                 $userRole = $user->roles()->first();
-                // dd($userRole);
 
                 if (!$userRole) {
-                    // Auth::guard('admin')->logout();
-                    return back()->with('error', 'Konfigurasi hak akses untuk akun Anda tidak ditemukan.');
+                    Auth::guard('admin')->logout(); // Logout jika tidak punya role
+                    return back()->with('toastr', [
+                        'type' => 'error',
+                        'message' => 'Konfigurasi hak akses untuk akun Anda tidak ditemukan.'
+                    ])->withInput();
                 }
-                // dd($user->isSuperUser());
-                // if ($user->isSuperUser() || $user->desa_id == Session::get('desa_id')) {
-                //     dd('a');
+
                 $request->session()->regenerate();
 
                 $permissions = Permission::where('role_id', $userRole->id)->pluck('menu_id')->toArray();
                 Session::put('user_permissions', $permissions);
 
-                // GANTI DENGAN KODE INI
                 return redirect()->route('backend.dashboard')->with('success', 'Selamat Datang, ' . $user->name);
-                // } else {
-                //     dd('b');
-                //     //     Auth::guard('admin')->logout();
-                //     //     return redirect()->route('backend.auth.login')->with('error', 'Akun Anda tidak terdaftar untuk mengakses desa ini.');
-                // }
-                // dd('op');
             }
 
-            // throw ValidationException::withMessages([
-            //     'username' => ['Username atau Password salah.'],
-            // ]);
-        }
-        // catch (ValidationException $e) {
-        //     return redirect()->back()->withErrors($e->errors())->withInput();
-        // }
-        catch (\Exception $e) {
-            dd($e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan pada sistem: ' . $e->getMessage());
+            // Jika otentikasi gagal
+            return back()->with('toastr', [
+                'type' => 'error',
+                'message' => 'Username atau password salah.'
+            ])->withInput();
+        } catch (ValidationException $e) {
+            // Tangani error validasi
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            // Tangani error lainnya
+            return back()->with('toastr', [
+                'type' => 'error',
+                'message' => 'Terjadi kesalahan pada sistem.'
+            ]);
         }
     }
-
 
     public function logout(Request $request)
     {
@@ -84,5 +78,11 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('backend.auth.login');
+    }
+
+    // TAMBAHKAN FUNGSI INI UNTUK RELOAD CAPTCHA
+    public function reloadCaptcha()
+    {
+        return response()->json(['captcha' => captcha_img('flat')]);
     }
 }

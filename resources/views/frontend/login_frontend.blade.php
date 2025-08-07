@@ -10,30 +10,42 @@
             </p>
         </div>
 
-        {{-- Session Status (untuk menampilkan pesan jika ada, misalnya setelah reset password) --}}
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
+
             <div>
-                <x-input-label for="nik_or_email" value="NIK atau Email" class="sr-only" />
-                <x-text-input id="nik_or_email" class="block mt-1 w-full" type="text" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Masukkan NIK atau Email" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <x-input-label for="nik" value="NIK" class="sr-only" />
+                <x-text-input id="nik" class="block mt-1 w-full" type="text" name="nik" :value="old('nik')"
+                    required autofocus placeholder="Masukkan NIK Anda (16 digit)" />
+                <x-input-error :messages="$errors->get('nik')" class="mt-2" />
             </div>
 
             <div class="mt-4">
                 <x-input-label for="password" value="Kata Sandi" class="sr-only" />
-                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi kamu" />
+                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
+                    autocomplete="current-password" placeholder="Masukkan kata sandi Anda" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
 
-            {{-- Bagian "Lupa kata sandi?" telah dihapus dari sini --}}
-
             <div class="mt-6">
-                <button type="submit" class="w-full justify-center rounded-md bg-green-600 py-3 text-white font-semibold hover:bg-green-700">
+                <button type="submit"
+                    class="w-full justify-center rounded-md bg-green-600 py-3 text-white font-semibold hover:bg-green-700">
                     Masuk
                 </button>
             </div>
         </form>
+        @if (session('success'))
+            <div class="mt-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mt-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
     </div>
 </x-layouts.guest>
