@@ -10,25 +10,31 @@ use App\Http\Controllers\Frontend\RegisterController;
 
 // --- CONTROLLER BACKEND ---
 use App\Http\Controllers\Backend\Auth\LoginController;
-use App\Http\Controllers\Backend\Dokumen\DownloadController;
 use App\Http\Controllers\Backend\Dokumen\SkkController;
 use App\Http\Controllers\Backend\Dokumen\SkmController;
 use App\Http\Controllers\Backend\Dokumen\SknController;
 use App\Http\Controllers\Backend\Dokumen\SkpController;
 use App\Http\Controllers\Backend\Dokumen\SkuController;
+use App\Http\Controllers\Backend\Galeri\FotoController;
 use App\Http\Controllers\Backend\Dokumen\SkawController;
 use App\Http\Controllers\Backend\Dokumen\SkbnController;
 use App\Http\Controllers\Backend\Dokumen\SkrtController;
 use App\Http\Controllers\Backend\Dokumen\SksjController;
 use App\Http\Controllers\Backend\Dokumen\SktmController;
+use App\Http\Controllers\Backend\Galeri\VideoController;
+use App\Http\Controllers\Backend\Kontak\PesanController;
 use App\Http\Controllers\Backend\Potensi\ListController;
 use App\Http\Controllers\Backend\BUMDES\ProdukController;
 use App\Http\Controllers\Backend\BUMDES\ProfilController;
+use App\Http\Controllers\Backend\Pemdes\PerdesController;
 use App\Http\Controllers\Backend\Manajemen\MenuController;
 use App\Http\Controllers\Backend\Manajemen\RoleController;
 use App\Http\Controllers\Backend\Manajemen\UserController;
+use App\Http\Controllers\Backend\Pemdes\JabatanController;
 use App\Http\Controllers\Backend\Manajemen\AdminController;
 use App\Http\Controllers\Backend\Manajemen\ModulController;
+use App\Http\Controllers\Backend\Pemdes\StrukturController;
+use App\Http\Controllers\Backend\Dokumen\DownloadController;
 use App\Http\Controllers\Backend\Informasi\AgendaController;
 use App\Http\Controllers\Backend\Informasi\BeritaController;
 use App\Http\Controllers\Backend\Potensi\KategoriController;
@@ -37,8 +43,12 @@ use App\Http\Controllers\Backend\Informasi\KomentarController;
 use App\Http\Controllers\Backend\Informasi\InfoGrafisController;
 use App\Http\Controllers\Backend\Informasi\PengumumanController;
 use App\Http\Controllers\Frontend\LoginController as FrontendLoginController;
+use App\Http\Controllers\Backend\Progdes\ListController as ProgramListController;
+use App\Http\Controllers\Backend\Progdes\KategoriController as ProgramKategoriController;
+use App\Http\Controllers\Backend\Pengaturan\PassphraseController;
 
-// ... (dan semua use statement Anda yang lain)
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -259,6 +269,42 @@ Route::middleware('domain')->group(function () {
                 Route::resource('sksj', SksjController::class);
                 Route::resource('sktm', SktmController::class);
                 Route::resource('sku', SkuController::class);
+            });
+
+            // Grup Program Desa
+            Route::prefix('program')->name('program.')->group(function () {
+                Route::resource('kategori', ProgramKategoriController::class, ['names' => 'category']);
+                Route::patch('/kategori/{kategori}/toggle-status', [ProgramKategoriController::class, 'toggleStatus'])->name('category.toggleStatus');
+                Route::resource('kegiatan', ProgramListController::class);
+                Route::patch('/kegiatan/{kegiatan}/toggle-status', [ProgramListController::class, 'toggleStatus'])->name('kegiatan.toggleStatus');
+            });
+
+            // Grup Galeri
+            Route::prefix('galeri')->name('galeri.')->group(function () {
+                Route::resource('foto', FotoController::class);
+                Route::patch('/foto/{foto}/toggle-status', [FotoController::class, 'toggleStatus'])->name('foto.toggleStatus');
+                Route::resource('video', VideoController::class);
+                Route::patch('/video/{video}/toggle-status', [VideoController::class, 'toggleStatus'])->name('video.toggleStatus');
+            });
+
+            // Grup Kontak
+            Route::prefix('kontak')->name('kontak.')->group(function () {
+                Route::resource('pesan', PesanController::class);
+                Route::patch('/pesan/{pesan}/toggle-status', [PesanController::class, 'toggleStatus'])->name('pesan.toggleStatus');
+            });
+
+            // Grup Pemerintah Desa (Pemdes)
+            Route::prefix('pemdes')->name('pemdes.')->group(function () {
+                Route::resource('jabatan', JabatanController::class);
+                Route::patch('/jabatan/{jabatan}/toggle-status', [JabatanController::class, 'toggleStatus'])->name('jabatan.toggleStatus');
+                Route::resource('perdes', PerdesController::class);
+                Route::patch('/perdes/{perde}/toggle-status', [PerdesController::class, 'toggleStatus'])->name('perdes.toggleStatus');
+                Route::resource('struktur', StrukturController::class);
+            });
+
+            Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
+                Route::resource('passphrase', PassphraseController::class);
+                Route::patch('/passphrase/{passphrase}/toggle-status', [PassphraseController::class, 'toggleStatus'])->name('passphrase.toggleStatus');
             });
             // ... (dan semua grup rute backend Anda yang lain)
         });

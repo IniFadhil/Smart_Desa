@@ -1,6 +1,6 @@
 <x-backend.layouts.app>
     <x-slot:title>
-        Manajemen Pengumuman
+        Informasi Pengumuman
     </x-slot:title>
 
     <div class="flex justify-between items-center mb-6">

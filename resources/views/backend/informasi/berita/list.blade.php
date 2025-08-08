@@ -1,6 +1,6 @@
 <x-backend.layouts.app>
     <x-slot:title>
-        Manajemen Berita
+        Informasi Berita
     </x-slot:title>
 
     <div class="flex justify-between items-center mb-6">
