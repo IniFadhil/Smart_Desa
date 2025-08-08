@@ -86,6 +86,12 @@
                             <p class="text-center text-gray-500">Belum ada agenda terdekat.</p>
                         @endforelse
                     </div>
+                    <div class="text-right mt-4">
+                        <a href="{{ route('agenda.index') }}"
+                            class="text-sm font-medium text-green-600 hover:text-green-800">
+                            Lihat Semua Agenda &rarr;
+                        </a>
+                    </div>
                 </div>
 
                 {{-- BAGIAN PENGUMUMAN (Sudah Dinamis) --}}

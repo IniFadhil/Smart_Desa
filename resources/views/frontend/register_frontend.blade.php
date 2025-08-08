@@ -1,6 +1,23 @@
 <x-layouts.guest>
-    <div class="w-full sm:max-w-md px-6 py-8 bg-white shadow-md overflow-hidden sm:rounded-lg">
+    @section('top-resource')
+        <style>
+            html.dark,
+            body.dark,
+            .dark {
+                background-color: white !important;
+                color: black !important;
+            }
 
+            .dark .bg-gray-900,
+            .dark .bg-gray-800,
+            .dark .text-gray-200 {
+                background-color: white !important;
+                color: black !important;
+            }
+        </style>
+    @endsection
+
+    <div class="w-full sm:max-w-md px-6 py-8 bg-white shadow-md overflow-hidden sm:rounded-lg">
         <div class="text-center mb-6">
             <img src="{{ asset('img/logo.png') }}" alt="Logo Desa" class="h-16 mx-auto">
             <h1 class="text-2xl font-bold text-gray-800 mt-4">Daftar Akun Baru</h1>

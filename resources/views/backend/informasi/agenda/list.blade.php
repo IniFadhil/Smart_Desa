@@ -1,6 +1,6 @@
 <x-backend.layouts.app>
     <x-slot:title>
-        Manajemen Agenda
+        Informasi Agenda
     </x-slot:title>
 
     <div class="flex justify-between items-center mb-6">

@@ -154,9 +154,97 @@
 
                     {{-- Menu tunggal PROGRAM DESA --}}
                     <li><a href="#" class="block py-2 px-3 rounded hover:bg-green-700">PROGRAM DESA</a></li>
+
+                    {{-- Navigasi Cepat (Hanya Mobile) --}}
+                    <div class="md:hidden">
+                        <li class="pt-4 mt-4 border-t border-green-700">
+                            <span class="px-3 text-xs font-semibold uppercase text-green-300">Navigasi</span>
+                        </li>
+
+                        {{-- Dropdown Layanan (Mobile) --}}
+                        <li>
+                            <button @click="openMenu = (openMenu === 'layanan' ? '' : 'layanan')"
+                                class="w-full flex justify-between items-center py-2 px-3 rounded hover:bg-green-700 focus:outline-none">
+                                <span>LAYANAN</span>
+                                <svg class="h-5 w-5 transform transition-transform"
+                                    :class="{ 'rotate-180': openMenu === 'layanan' }" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <div x-show="openMenu === 'layanan'" x-transition
+                                class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
+                                <a href="{{ route('suket.sk-kematian') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Kematian</a>
+                                <a href="{{ route('suket.sk-usaha') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Usaha</a>
+                                <a href="{{ route('suket.sk-beda-nama') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan Beda
+                                    Nama</a>
+                                <a href="{{ route('suket.sk-tidak-mampu') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Tidak Mampu</a>
+                                <a href="{{ route('suket.sk-penghasilan') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Penghasilan</a>
+                                <a href="{{ route('suket.sk-status-pernikahan') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Ket. Status
+                                    Pernikahan</a>
+                                <a href="{{ route('suket.sk-riwayat-tanah') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Ket. Riwayat
+                                    Tanah</a>
+                                <a href="{{ route('suket.sk-kelahiran') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Kelahiran</a>
+                                <a href="{{ route('suket.sk-ahli-waris') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan Ahli
+                                    Waris</a>
+                                <a href="{{ route('suket.sk-lain') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
+                                    Lain</a>
+                                <div class="border-t border-green-600 my-1"></div>
+                                <a href="#" class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Lihat
+                                    Progres Pemohon</a>
+                            </div>
+                        </li>
+
+                        <li><a href="{{ url('/berita') }}"
+                                class="block py-2 px-3 rounded hover:bg-green-700">BERITA</a></li>
+                        <li><a href="{{ route('kondisi-geografis') }}"
+                                class="block py-2 px-3 rounded hover:bg-green-700">INFO GRAFIS</a></li>
+
+                        {{-- Dropdown Galeri (Mobile) --}}
+                        <li>
+                            <button @click="openMenu = (openMenu === 'galeri' ? '' : 'galeri')"
+                                class="w-full flex justify-between items-center py-2 px-3 rounded hover:bg-green-700 focus:outline-none">
+                                <span>GALERI</span>
+                                <svg class="h-5 w-5 transform transition-transform"
+                                    :class="{ 'rotate-180': openMenu === 'galeri' }" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <div x-show="openMenu === 'galeri'" x-transition
+                                class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
+                                <a href="{{ route('galeri-foto') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Foto</a>
+                                <a href="{{ route('galeri-video') }}"
+                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Video</a>
+                            </div>
+                        </li>
+
+                        <li><a href="{{ route('hubungi-kami') }}"
+                                class="block py-2 px-3 rounded hover:bg-green-700">HUBUNGI KAMI</a></li>
+                    </div>
                 </ul>
             </nav>
-            
+
             {{-- Bagian Login/Logout di bawah sidebar (hanya untuk mobile) --}}
             <div class="mt-6 md:hidden">
                 @auth('masyarakat')
@@ -283,38 +371,48 @@
 
                         {{-- PROFIL PENGGUNA DROPDOWN --}}
                         @auth('masyarakat')
-                        <div x-data="{ dropdownOpen: false }" class="relative">
-                            <button @click="dropdownOpen = ! dropdownOpen"
-                                class="flex items-center space-x-2 relative focus:outline-none">
-                                {{-- Avatar Pengguna --}}
-                                @if (Auth::guard('masyarakat')->user()->profile_photo_url)
-                                    <img class="h-9 w-9 rounded-full object-cover" src="{{ Auth::guard('masyarakat')->user()->profile_photo_url }}" alt="Foto Profil">
-                                @else
-                                    {{-- Tampilkan IKON AVATAR BARU jika tidak ada foto --}}
-                                    <div class="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <svg class="h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                @endif
-                                <h2  class="text-gray-600 hover:text-green-700">{{ Auth::guard('masyarakat')->user()->nama_lengkap }}</h2>
-                            </button>
-                    
-                            <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition
-                                class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-50">
-                                <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600 hover:text-white">Profil Saya</a>
-                                
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-600 hover:text-white">
-                                        Logout
-                                    </button>
-                                </form>
+                            <div x-data="{ dropdownOpen: false }" class="relative">
+                                <button @click="dropdownOpen = ! dropdownOpen"
+                                    class="flex items-center space-x-2 relative focus:outline-none">
+                                    {{-- Avatar Pengguna --}}
+                                    @if (Auth::guard('masyarakat')->user()->profile_photo_url)
+                                        <img class="h-9 w-9 rounded-full object-cover"
+                                            src="{{ Auth::guard('masyarakat')->user()->profile_photo_url }}"
+                                            alt="Foto Profil">
+                                    @else
+                                        {{-- Tampilkan IKON AVATAR BARU jika tidak ada foto --}}
+                                        <div class="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <svg class="h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <h2 class="text-gray-600 hover:text-green-700">
+                                        {{ Auth::guard('masyarakat')->user()->nama_lengkap }}</h2>
+                                </button>
+
+                                <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition
+                                    class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-50">
+                                    <a href="{{ route('profile') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600 hover:text-white">Profil
+                                        Saya</a>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-600 hover:text-white">
+                                            Logout
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
                         @else
-                        {{-- Tombol Login jika belum login --}}
-                        <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">Login</a>
+                            {{-- Tombol Login jika belum login --}}
+                            <a href="{{ route('login') }}"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">Login</a>
                         @endauth
                     </div>
                 </div>
@@ -336,7 +434,7 @@
                 @endif
 
                 @yield('content')
-                
+
                 <footer class="bg-green-800 text-white mt-auto">
                     <div class="container mx-auto px-6 py-12">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
