@@ -10,6 +10,17 @@ use App\Http\Controllers\Frontend\RegisterController;
 
 // --- CONTROLLER BACKEND ---
 use App\Http\Controllers\Backend\Auth\LoginController;
+use App\Http\Controllers\Backend\Dokumen\DownloadController;
+use App\Http\Controllers\Backend\Dokumen\SkkController;
+use App\Http\Controllers\Backend\Dokumen\SkmController;
+use App\Http\Controllers\Backend\Dokumen\SknController;
+use App\Http\Controllers\Backend\Dokumen\SkpController;
+use App\Http\Controllers\Backend\Dokumen\SkuController;
+use App\Http\Controllers\Backend\Dokumen\SkawController;
+use App\Http\Controllers\Backend\Dokumen\SkbnController;
+use App\Http\Controllers\Backend\Dokumen\SkrtController;
+use App\Http\Controllers\Backend\Dokumen\SksjController;
+use App\Http\Controllers\Backend\Dokumen\SktmController;
 use App\Http\Controllers\Backend\Potensi\ListController;
 use App\Http\Controllers\Backend\BUMDES\ProdukController;
 use App\Http\Controllers\Backend\BUMDES\ProfilController;
@@ -57,6 +68,12 @@ Route::middleware('domain')->group(function () {
         Route::view('profile', 'profile')->name('profile');
     });
 
+    // routue bumdes produk //
+    Route::get('/bumdes/produk', [BumdesController::class, 'produk'])->name('bumdes.produk');
+
+    // route bumdes profile //
+    Route::get('/bumdes/profil', [BumdesController::class, 'profil'])->name('bumdes.profil');
+
     // --- Halaman Profil ---
     Route::get('/sejarah-desa', function () {
         return view('frontend.profile.sejarah_desa');
@@ -79,7 +96,30 @@ Route::middleware('domain')->group(function () {
         Route::get('/sk-usaha', function () {
             return view('frontend.SUKET.SKU');
         })->name('sk-usaha');
-        // ... (dan semua rute suket Anda)
+        Route::get('/sk-beda-nama', function () {
+            return view('frontend.SUKET.SKBN');
+        })->name('sk-beda-nama');
+        Route::get('/sk-tidak-mampu', function () {
+            return view('frontend.SUKET.SKTM');
+        })->name('sk-tidak-mampu');
+        Route::get('/sk-penghasilan', function () {
+            return view('frontend.SUKET.SKP');
+        })->name('sk-penghasilan');
+        Route::get('/sk-status-pernikahan', function () {
+            return view('frontend.SUKET.SKSP');
+        })->name('sk-status-pernikahan');
+        Route::get('/sk-riwayat-tanah', function () {
+            return view('frontend.SUKET.SKRT');
+        })->name('sk-riwayat-tanah');
+        Route::get('/sk-kelahiran', function () {
+            return view('frontend.SUKET.SKL');
+        })->name('sk-kelahiran');
+        Route::get('/sk-ahli-waris', function () {
+            return view('frontend.SUKET.SKAW');
+        })->name('sk-ahli-waris');
+        Route::get('/sk-lain', function () {
+            return view('frontend.SUKET.SJ');
+        })->name('sk-lain');
     });
 
     // --- Berita, Pengumuman, Agenda ---
@@ -89,6 +129,41 @@ Route::middleware('domain')->group(function () {
     });
     Route::get('/pengumuman', [BerandaController::class, 'pengumuman'])->name('pengumuman.index');
     Route::get('/agenda', [BerandaController::class, 'agenda'])->name('agenda.index');
+
+    // Rute untuk halaman Kepala Desa
+    Route::get('/pemerintah-desa/kepala_desa', function () {
+        return view('frontend.pemdes.kepala_desa');
+    })->name('pemerintah.kepala_desa');
+
+    // TAMBAHKAN RUTE INI untuk halaman Perangkat Desa
+    Route::get('/pemerintah-desa/perangkat_desa', function () {
+        return view('frontend.pemdes.perangkat_desa');
+    })->name('pemerintah.perangkat_desa');
+
+
+    // Rute untuk halaman Kantor Desa
+    Route::get('/profil-desa/kantor-desa', function () {
+        return view('frontend.pemdes.kantor_desa');
+    })->name('profil.kantor-desa');
+
+    Route::get('/pemerintah-desa/struktur_organisasi', function () {
+        return view('frontend.pemdes.struktur_organisasi');
+    })->name('pemerintah.struktur_organisasi');
+
+    Route::get('/potensi-desa/kuliner', function () {
+        return view('frontend.potdes.kuliner');
+    })->name('potensi.kuliner');
+
+    // Rute untuk halaman Wisata
+    Route::get('/potensi-desa/wisata', function () {
+        // Pastikan Anda sudah membuat file wisata.blade.php di dalam folder potdes
+        return view('frontend.potdes.wisata'); // Mengarah ke resources/views/frontend/potdes/wisata.blade.php
+    })->name('potensi.wisata');
+
+    Route::get('/potensi-desa/wisata/{slug}', function ($slug) {
+        // Nanti, backend akan menggunakan $slug untuk mengambil data dari database
+        return view('frontend.potdes.detail-wisata');
+    })->name('potensi.wisata.detail');
 
     // --- Rute Lainnya ---
     Route::get('/galeri-foto', function () {
@@ -169,6 +244,21 @@ Route::middleware('domain')->group(function () {
 
                 Route::resource('list', ListController::class);
                 Route::patch('/list/{list}/toggle-status', [ListController::class, 'toggleStatus'])->name('list.toggleStatus');
+            });
+
+            // --- SURAT KETERANGAN
+            Route::prefix('dokumen')->name('dokumen.')->group(function () {
+                Route::resource('download', DownloadController::class);
+                Route::resource('skaw', SkawController::class);
+                Route::resource('skbn', SkbnController::class);
+                Route::resource('skk', SkkController::class);
+                Route::resource('skm', SkmController::class);
+                Route::resource('skn', SknController::class);
+                Route::resource('skp', SkpController::class);
+                Route::resource('skrt', SkrtController::class);
+                Route::resource('sksj', SksjController::class);
+                Route::resource('sktm', SktmController::class);
+                Route::resource('sku', SkuController::class);
             });
             // ... (dan semua grup rute backend Anda yang lain)
         });

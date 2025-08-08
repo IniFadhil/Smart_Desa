@@ -12,7 +12,7 @@
 <body class="bg-gray-100 flex flex-col min-h-screen">
     @stack('scripts')
 
-    <div class="relative flex-grow  md:flex" x-data="{ isSidebarOpen: window.innerWidth > 768 ? true : false }"
+    <div class="relative flex-grow md:flex" x-data="{ isSidebarOpen: window.innerWidth > 768 ? true : false }"
         @resize.window="isSidebarOpen = window.innerWidth > 768 ? true : false"
         :class="{ 'overflow-hidden': isSidebarOpen && window.innerWidth < 768 }">
 
@@ -85,13 +85,11 @@
                         </button>
                         <div x-show="openMenu === 'potensi'" x-transition
                             class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
-                            {{-- Link ke Halaman Kuliner --}}
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('potensi.kuliner') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 KULINER
                             </a>
-                            {{-- Link ke Halaman Wisata --}}
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('potensi.wisata') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 WISATA
                             </a>
@@ -113,9 +111,9 @@
                         </button>
                         <div x-show="openMenu === 'bumdes'" x-transition
                             class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('bumdes.profil') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">PROFIL BUMDES</a>
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('bumdes.produk') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">PRODUK BUMDES</a>
                         </div>
                     </li>
@@ -135,19 +133,19 @@
                         </button>
                         <div x-show="openMenu === 'pemerintahan'" x-transition
                             class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('pemerintah.kepala_desa') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 KEPALA DESA
                             </a>
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('pemerintah.perangkat_desa') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 PERANGKAT DESA
                             </a>
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('profil.kantor-desa') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 KANTOR DESA
                             </a>
-                            <a href="{{-- sementara, jika belum ada route-nya --}}"
+                            <a href="{{ route('pemerintah.struktur_organisasi') }}"
                                 class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">
                                 STRUKTUR ORGANISASI
                             </a>
@@ -156,107 +154,12 @@
 
                     {{-- Menu tunggal PROGRAM DESA --}}
                     <li><a href="#" class="block py-2 px-3 rounded hover:bg-green-700">PROGRAM DESA</a></li>
-
-                    {{-- Navigasi Cepat (Hanya Mobile) --}}
-                    <div class="md:hidden">
-                        <li class="pt-4 mt-4 border-t border-green-700">
-                            <span class="px-3 text-xs font-semibold uppercase text-green-300">Navigasi</span>
-                        </li>
-
-                        {{-- Dropdown Layanan (Mobile) --}}
-                        <li>
-                            <button @click="openMenu = (openMenu === 'layanan' ? '' : 'layanan')"
-                                class="w-full flex justify-between items-center py-2 px-3 rounded hover:bg-green-700 focus:outline-none">
-                                <span>LAYANAN</span>
-                                <svg class="h-5 w-5 transform transition-transform"
-                                    :class="{ 'rotate-180': openMenu === 'layanan' }" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                            {{-- <div x-show="openMenu === 'layanan'" x-transition
-                                class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
-                                <a href="{{ route('suket.sk-kematian') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Kematian</a>
-                                <a href="{{ route('suket.sk-usaha') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Usaha</a>
-                                <a href="{{ route('suket.sk-beda-nama') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan Beda
-                                    Nama</a>
-                                <a href="{{ route('suket.sk-tidak-mampu') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Tidak Mampu</a>
-                                <a href="{{ route('suket.sk-penghasilan') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Penghasilan</a>
-                                <a href="{{ route('suket.sk-status-pernikahan') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Ket. Status
-                                    Pernikahan</a>
-                                <a href="{{ route('suket.sk-riwayat-tanah') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Ket. Riwayat
-                                    Tanah</a>
-                                <a href="{{ route('suket.sk-kelahiran') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Kelahiran</a>
-                                <a href="{{ route('suket.sk-ahli-waris') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan Ahli
-                                    Waris</a>
-                                <a href="{{ route('suket.sk-lain') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Surat Keterangan
-                                    Lain</a>
-                                <div class="border-t border-green-600 my-1"></div>
-                                <a href="#" class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Lihat
-                                    Progres Pemohon</a>
-                            </div> --}}
-                        </li>
-
-                        <li><a href="{{ url('/berita') }}"
-                                class="block py-2 px-3 rounded hover:bg-green-700">BERITA</a></li>
-                        <li><a href="{{ route('kondisi-geografis') }}"
-                                class="block py-2 px-3 rounded hover:bg-green-700">INFO GRAFIS</a></li>
-
-                        {{-- Dropdown Galeri (Mobile) --}}
-                        <li>
-                            <button @click="openMenu = (openMenu === 'galeri' ? '' : 'galeri')"
-                                class="w-full flex justify-between items-center py-2 px-3 rounded hover:bg-green-700 focus:outline-none">
-                                <span>GALERI</span>
-                                <svg class="h-5 w-5 transform transition-transform"
-                                    :class="{ 'rotate-180': openMenu === 'galeri' }" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                            <div x-show="openMenu === 'galeri'" x-transition
-                                class="pl-4 mt-2 space-y-2 bg-green-700 rounded-md overflow-hidden">
-                                <a href="{{ route('galeri-foto') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Foto</a>
-                                <a href="{{ route('galeri-video') }}"
-                                    class="block text-sm py-2 px-3 hover:bg-green-600 rounded-md">Video</a>
-                            </div>
-                        </li>
-
-                        <li><a href="{{ route('hubungi-kami') }}"
-                                class="block py-2 px-3 rounded hover:bg-green-700">HUBUNGI KAMI</a></li>
-                    </div>
                 </ul>
             </nav>
-            {{-- ====================================================== --}}
-            {{-- PERBAIKAN DI SINI: Tombol Login/Logout dikembalikan --}}
-            {{-- ====================================================== --}}
-            <div class="mt-6">
+            
+            {{-- Bagian Login/Logout di bawah sidebar (hanya untuk mobile) --}}
+            <div class="mt-6 md:hidden">
                 @auth('masyarakat')
-                    {{-- JIKA USER (MASYARAKAT) SUDAH LOGIN, TAMPILKAN INI --}}
-                    <div class="text-center mb-4 px-3">
-                        <p class="text-sm font-semibold truncate">{{ Auth::guard('masyarakat')->user()->nama_lengkap }}
-                        </p>
-                        <a href="{{ route('profile') }}" class="text-xs text-green-300 hover:underline">Lihat Profil</a>
-                    </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();"
@@ -270,7 +173,6 @@
                         </a>
                     </form>
                 @else
-                    {{-- JIKA PENGUNJUNG BIASA (BELUM LOGIN), TAMPILKAN INI --}}
                     <a href="{{ route('login') }}"
                         class="flex items-center space-x-2 block py-2 px-3 rounded hover:bg-green-700">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,7 +182,7 @@
                         </svg>
                         <span>LOGIN</span>
                     </a>
-                @endguest
+                @endauth
             </div>
         </aside>
 
@@ -295,7 +197,8 @@
         <div class="flex-1 flex flex-col overflow-hidden md:ml-64 transition-all duration-300 ease-in-out">
             {{-- HEADER / NAVBAR ATAS (LENGKAP) --}}
             <header class="bg-white shadow z-10">
-                <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-end items-center">
+                <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+                    {{-- Sisi Kiri Header: Navigasi Utama --}}
                     <nav class="hidden md:flex space-x-8">
                         {{-- Dropdown Layanan --}}
                         <div x-data="{ open: false }" class="relative">
@@ -307,7 +210,7 @@
                                         d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
-                            {{-- <div x-show="open" @click.away="open = false" x-transition
+                            <div x-show="open" @click.away="open = false" x-transition
                                 class="absolute mt-2 w-64 bg-white text-gray-800 rounded-md shadow-lg py-1 z-50 origin-top-right">
                                 <a href="{{ route('suket.sk-kematian') }}"
                                     class="block px-4 py-2 text-sm hover:bg-gray-100">Surat Keterangan Kematian</a>
@@ -334,7 +237,7 @@
                                 <div class="border-t border-gray-200 my-1"></div>
                                 <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Lihat Progres
                                     Pemohon</a>
-                            </div> --}}
+                            </div>
                         </div>
 
                         <a href="{{ url('/berita') }}" class="text-gray-600 hover:text-green-700">BERITA</a>
@@ -363,17 +266,56 @@
                             KAMI</a>
                     </nav>
 
-                    {{-- Kolom Pencarian --}}
-                    <div class="relative ml-6">
-                        <input type="search" placeholder="Search"
-                            class="py-2 pl-10 pr-4 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
+                    {{-- Sisi Kanan Header: Search & Profil --}}
+                    <div class="flex items-center space-x-4 ml-auto">
+                        {{-- Kolom Pencarian --}}
+                        <div class="relative hidden sm:block">
+                            <input type="search" placeholder="Search"
+                                class="py-2 pl-10 pr-4 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
                         </div>
+
+                        {{-- PROFIL PENGGUNA DROPDOWN --}}
+                        @auth('masyarakat')
+                        <div x-data="{ dropdownOpen: false }" class="relative">
+                            <button @click="dropdownOpen = ! dropdownOpen"
+                                class="flex items-center space-x-2 relative focus:outline-none">
+                                {{-- Avatar Pengguna --}}
+                                @if (Auth::guard('masyarakat')->user()->profile_photo_url)
+                                    <img class="h-9 w-9 rounded-full object-cover" src="{{ Auth::guard('masyarakat')->user()->profile_photo_url }}" alt="Foto Profil">
+                                @else
+                                    {{-- Tampilkan IKON AVATAR BARU jika tidak ada foto --}}
+                                    <div class="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                @endif
+                                <h2  class="text-gray-600 hover:text-green-700">{{ Auth::guard('masyarakat')->user()->nama_lengkap }}</h2>
+                            </button>
+                    
+                            <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-50">
+                                <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600 hover:text-white">Profil Saya</a>
+                                
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-600 hover:text-white">
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        @else
+                        {{-- Tombol Login jika belum login --}}
+                        <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">Login</a>
+                        @endauth
                     </div>
                 </div>
             </header>
@@ -394,15 +336,10 @@
                 @endif
 
                 @yield('content')
-                {{-- ====================================================== --}}
-                {{--          KODE FOOTER BARU UNTUK DITEMPELKAN          --}}
-                {{-- ====================================================== --}}
-
+                
                 <footer class="bg-green-800 text-white mt-auto">
                     <div class="container mx-auto px-6 py-12">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-                            {{-- Kolom 1: Logo dan Alamat --}}
                             <div class="col-span-1">
                                 <div class="flex items-center mb-4">
                                     <img src="{{ asset('img/Logo.png') }}" alt="Logo Desa" class="h-12 mr-3">
@@ -416,9 +353,7 @@
                                     Kabupaten Subang, Jawa Barat 41282
                                 </p>
                             </div>
-
-                            {{-- Kolom 2: Tautan Penting --}}
-                            {{-- <div>
+                            <div>
                                 <h3 class="text-white font-semibold mb-4">Tautan Penting</h3>
                                 <ul class="space-y-2 text-sm">
                                     <li><a href="{{ route('pemerintah.kepala_desa') }}"
@@ -434,24 +369,19 @@
                                             class="text-green-200 hover:text-white transition-colors">Kebijakan
                                             Privasi</a></li>
                                 </ul>
-                            </div> --}}
-
-                            {{-- Kolom 3: Potensi Desa --}}
+                            </div>
                             <div>
                                 <h3 class="text-white font-semibold mb-4">Potensi Desa</h3>
                                 <ul class="space-y-2 text-sm">
-                                    <li><a href="{{-- sementara, jika belum ada route-nya --}}"
+                                    <li><a href="{{ route('potensi.kuliner') }}"
                                             class="text-green-200 hover:text-white transition-colors">Kuliner</a></li>
-                                    <li><a href="{{-- sementara, jika belum ada route-nya --}}"
+                                    <li><a href="{{ route('potensi.wisata') }}"
                                             class="text-green-200 hover:text-white transition-colors">Wisata</a></li>
                                 </ul>
                             </div>
-
-                            {{-- Kolom 4: Media Sosial --}}
                             <div>
                                 <h3 class="text-white font-semibold mb-4">Ikuti Kami</h3>
                                 <div class="flex space-x-4">
-                                    {{-- Ganti # dengan link media sosial Anda --}}
                                     <a href="#" class="text-green-200 hover:text-white transition-colors">
                                         <span class="sr-only">Twitter</span>
                                         <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"
@@ -482,7 +412,6 @@
                             </div>
                         </div>
 
-                        {{-- Copyright --}}
                         <div class="mt-12 border-t border-green-700 pt-6">
                             <p class="text-center text-sm text-green-200">
                                 &copy; {{ date('Y') }} Pemerintah Desa Sukamandi. Hak Cipta Dilindungi.
@@ -490,10 +419,6 @@
                         </div>
                     </div>
                 </footer>
-
-                {{-- ====================================================== --}}
-                {{--                      AKHIR DARI FOOTER                 --}}
-                {{-- ====================================================== --}}
             </main>
         </div>
     </div>
