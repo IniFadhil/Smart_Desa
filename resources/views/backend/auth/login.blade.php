@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Backoffice</title>
-    {{-- Anda bisa menambahkan link ke file CSS di sini --}}
     <style>
+        /* ... (CSS Anda yang sudah ada, tidak perlu diubah) ... */
         body {
             font-family: sans-serif;
             display: flex;
@@ -50,24 +50,6 @@
             box-sizing: border-box;
         }
 
-        .captcha-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .captcha-container img {
-            border-radius: 4px;
-        }
-
-        .captcha-container button {
-            padding: 0.5rem;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            background: #f9f9f9;
-            border-radius: 4px;
-        }
-
         .btn-submit {
             width: 100%;
             padding: 0.8rem;
@@ -93,6 +75,28 @@
             margin-bottom: 1rem;
             text-align: center;
         }
+
+        /* CSS UNTUK CAPTCHA */
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .captcha-container img {
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-refresh {
+            padding: 0.5rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
     </style>
 </head>
 
@@ -100,7 +104,6 @@
     <div class="login-container">
         <h2>Login Admin</h2>
 
-        {{-- Menampilkan pesan error dari Toastr --}}
         @if (Session::has('toastr'))
             @php $toastr = Session::get('toastr'); @endphp
             <div class="toastr-error">
@@ -126,13 +129,41 @@
                 @enderror
             </div>
 
-
-
+            <div class="form-group">
+                <label for="captcha">Verifikasi</label>
+                <div class="captcha-container">
+                    <span id="captcha-img">{!! captcha_img('flat') !!}</span>
+                    <a href="javascript:void(0);" id="reload-captcha"
+                        style="margin-left: 10px; text-decoration: none; color: #007bff;">
+                        Refresh
+                    </a>
+                </div>
+                <input type="text" id="captcha" name="captcha" required style="margin-top: 0.5rem;">
+                @error('captcha')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
             <button type="submit" class="btn-submit">Login</button>
         </form>
     </div>
 
-
+    <script>
+        document.getElementById('reload-captcha').addEventListener('click', function() {
+            fetch("{{ route('backend.auth.reloadCaptcha') }}", {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('captcha-img').innerHTML = data.captcha;
+                })
+                .catch(error => {
+                    console.error('Error reloading captcha:', error);
+                });
+        });
+    </script>
 </body>
 
 </html>

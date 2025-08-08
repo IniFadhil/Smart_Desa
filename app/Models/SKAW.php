@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Traits\HashId;
+
+class SKAW extends Model
+{
+    use HashId;
+
+    protected $table = 'ds_sk_ahli_waris';
+    protected $guarded = [];
+    public $incrementing = false;
+
+    public function desa(){
+        return $this->belongsTo(Desa::class,'desa_id','id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function provinsi(){
+        return $this->belongsTo(Provinsi::class,'provinsi_id','id');
+    }
+
+    public function kota(){
+        return $this->belongsTo(Kota::class,'kota_id','id');
+    }
+
+    public function kecamatan(){
+        return $this->belongsTo(Kecamatan::class,'kecamatan_id','id');
+    }
+
+    public function area(){
+        return $this->belongsTo(Desa::class,'area_id','id');
+    }
+
+    public function pasangan()
+    {
+        return $this->hasMany(SKAWPasangan::class,'skaw_id','id');
+    }
+
+    public function anak()
+    {
+        return $this->hasMany(SKAWAnak::class,'skaw_id','id');
+    }
+}

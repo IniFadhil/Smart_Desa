@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
@@ -12,9 +13,16 @@ return [
             'provider' => 'users',
         ],
 
+        // Guard untuk Admin Backoffice
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admin', // Menggunakan provider 'admin'
+            'provider' => 'admins',
+        ],
+
+        // Guard untuk User Frontend
+        'masyarakat' => [
+            'driver' => 'session',
+            'provider' => 'users', // Menggunakan provider 'users'
         ],
     ],
 
@@ -24,7 +32,7 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        'admin' => [ // Provider untuk model Admin
+        'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
@@ -40,4 +48,5 @@ return [
     ],
 
     'password_timeout' => 10800,
+
 ];

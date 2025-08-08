@@ -30,7 +30,7 @@ class BumdesController extends Controller
 
         return view('frontend.bumdes.produk', compact('produks'));
     }
-     public function profil()
+    public function profil()
     {
         // Nanti, data ini bisa Anda ambil dari database
         $profil = (object) [

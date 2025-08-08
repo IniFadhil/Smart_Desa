@@ -14,26 +14,25 @@ class CheckPermissionMiddleware
         /** @var \App\Models\Admin|null $user */
         $user = Auth::guard('admin')->user();
 
-        // 1. Jika user tidak login, arahkan ke halaman login
         if (!$user) {
             return redirect()->route('backend.auth.login');
         }
 
-        // 2. Jika user adalah Super User, izinkan semua akses
+        // Jika user adalah Super User, izinkan semua akses
         if ($user->isSuperUser()) {
             return $next($request);
         }
 
-        // 3. Ambil izin dari session (sudah diset saat login)
+        // Ambil izin dari session yang sudah diset saat login
         $permissions = Session::get('user_permissions', []);
 
-        // 4. Cek apakah menu yang diakses ada di dalam daftar izin
+        // Cek apakah menu yang diakses ada di dalam daftar izin
         if (in_array($menu, $permissions)) {
-            return $next($request); // Izinkan
+            return $next($request); // Izinkan akses
         }
 
-        // 5. Jika tidak punya akses, tolak
-        toastr()->error('Anda tidak memiliki hak akses untuk membuka halaman ini.', 'Akses Ditolak');
-        return redirect()->route('backend.dashboard');
+        // Jika tidak punya akses, tolak dan kembali ke dashboard
+        return redirect()->route('backend.dashboard')
+            ->with('error', 'Anda tidak memiliki hak akses untuk membuka halaman ini.');
     }
 }

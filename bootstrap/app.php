@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarkan alias middleware Anda di sini
         $middleware->alias([
             'role'   => \App\Http\Middleware\CheckRole::class,
-            'domain' => \App\Http\Middleware\DomainMiddleware::class,
+            'domain' => \App\Http\Middleware\CheckDomainPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
