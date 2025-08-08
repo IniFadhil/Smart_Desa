@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Backend\Auth;
 
-use App\Models\Admin;
-use App\Models\Permission;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Session; // Tambahkan ini
 
 class LoginController extends Controller
 {
@@ -19,57 +16,42 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // TAMBAHKAN VALIDASI UNTUK CAPTCHA
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            'captcha' => 'required|captcha' // Aturan validasi captcha
+            'captcha' => 'required|captcha'
         ]);
 
+        $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $credentials = [
+            $fieldType => $request->username,
+            'password' => $request->password,
+            'status' => 1,
+        ];
 
-        try {
-            $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-            $credentials = [
-                $fieldType => $request->username,
-                'password' => $request->password,
-                'status' => 1,
-            ];
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
 
-            if (Auth::guard('admin')->attempt($credentials)) {
-                $user = Auth::guard('admin')->user();
-                $userRole = $user->roles()->first();
+            $admin = Auth::guard('admin')->user();
+            $role = $admin->roles()->first(); // Ambil role pertama dari admin
 
-                if (!$userRole) {
-                    Auth::guard('admin')->logout(); // Logout jika tidak punya role
-                    return back()->with('toastr', [
-                        'type' => 'error',
-                        'message' => 'Konfigurasi hak akses untuk akun Anda tidak ditemukan.'
-                    ])->withInput();
-                }
-
-                $request->session()->regenerate();
-
-                $permissions = Permission::where('role_id', $userRole->id)->pluck('menu_id')->toArray();
-                Session::put('user_permissions', $permissions);
-
-                return redirect()->route('backend.dashboard')->with('success', 'Selamat Datang, ' . $user->name);
+            if (!$role) {
+                Auth::guard('admin')->logout();
+                return back()->with('error', 'Akun Anda tidak memiliki hak akses.');
             }
 
-            // Jika otentikasi gagal
-            return back()->with('toastr', [
-                'type' => 'error',
-                'message' => 'Username atau password salah.'
-            ])->withInput();
-        } catch (ValidationException $e) {
-            // Tangani error validasi
-            return back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            // Tangani error lainnya
-            return back()->with('toastr', [
-                'type' => 'error',
-                'message' => 'Terjadi kesalahan pada sistem.'
-            ]);
+            // ======================================================
+            // BAGIAN PENTING: Simpan hak akses ke session
+            // ======================================================
+            $permissions = $role->permissions()->pluck('menu_id')->toArray();
+            Session::put('user_permissions', $permissions);
+            // ======================================================
+
+            return redirect()->intended(route('backend.dashboard'))
+                ->with('success', 'Selamat Datang, ' . $admin->name);
         }
+
+        return back()->withErrors(['username' => 'Username atau password salah.'])->withInput($request->only('username'));
     }
 
     public function logout(Request $request)
@@ -80,7 +62,6 @@ class LoginController extends Controller
         return redirect()->route('backend.auth.login');
     }
 
-    // TAMBAHKAN FUNGSI INI UNTUK RELOAD CAPTCHA
     public function reloadCaptcha()
     {
         return response()->json(['captcha' => captcha_img('flat')]);

@@ -1,0 +1,54 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateDsSkSapuJagat extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('ds_sk_sapu_jagat', function (Blueprint $table) {
+            $table->string('id',50);
+            $table->string('no_surat',150)->nullable();
+            $table->string('desa_id',50);
+            $table->foreign('desa_id')->references('id')->on('ds_desa');
+            $table->string('user_id',50);
+            $table->foreign('user_id')->references('id')->on('ds_users');
+            $table->string('nama_pejabat',150);
+            $table->string('jabatan',150);
+            $table->text('alamat',150);
+            $table->string('no_nik',16)->unique();
+            $table->string('nama_penduduk',150);
+            $table->string('umur',150);
+            $table->string('keperluan',150);
+            $table->date('tgl_menetap');
+            $table->string('pekerjaan_id',50);
+            $table->foreign('pekerjaan_id')->references('id')->on('ds_pekerjaan');
+            $table->text('alamat_kantor',150);
+            $table->enum('verifikasi_kasi',[1,0])->default(0);
+            $table->enum('verifikasi_sekdes',[1,0])->default(0);
+            $table->enum('verifikasi_kades',[1,0])->default(0);
+            $table->enum('status',['1','0'])->default('1');
+            $table->string('file_ktp');
+            $table->string('file_rtrw');
+            $table->string('file_surat_pernyataan');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('ds_sk_sapu_jagat');
+    }
+}

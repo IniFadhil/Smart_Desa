@@ -3,203 +3,106 @@
 namespace App\Http\Controllers\Backend\BUMDES;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\BumdesProduk;
 use App\Models\BumdesProfil;
-use Str;
-use Auth;
-use Session;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProdukController extends Controller
 {
-    function __construct()
-    {
-        $this->middleware('permissions:produk');
-    }
-
     public function index()
     {
-        try{
-            $data['produk'] = BumdesProduk::where('desa_id',Session::get('desa_id'))->get();
-            return view('backend.bumdes.produk.list', $data);
-        }catch(\Exception $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
+        $produks = BumdesProduk::with('bumdes')->latest()->get();
+        return view('backend.bumdes.produk.list', compact('produks'));
     }
 
     public function create()
     {
-        try{
-            $data['bumdes'] = BumdesProfil::where('desa_id',Session::get('desa_id'))->get();
-            return view('backend.bumdes.produk.create', $data);
-        }catch(\Exception $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
+        $bumdes = BumdesProfil::where('status', 'show')->get();
+        return view('backend.bumdes.produk.create', compact('bumdes'));
     }
 
-    public function createProccess(Request $request)
+    public function store(Request $request)
     {
-        try{
-            $this->validasiForm($request);
-            $data = $this->bindData($request);
-            $data['id'] = $this->generateAutoNumber('ds_bumdes_produk');
-            $data['created_by'] = Auth::user()->name;
-            $data['desa_id'] = empty(Auth::user()->desa_id)?Session::get('desa_id'):Auth::user()->desa_id;
+        $validated = $request->validate([
+            'bumdes_id' => 'required|exists:ds_bumdes_profil,id',
+            'name' => 'required|string|max:255|unique:ds_bumdes_produk,name',
+            'short_description' => 'required|string|max:191',
+            'description' => 'required|string',
+            'img' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
 
-            $produk = BumdesProduk::create($data);
-            toastr()->success('Data Berhasil Ditambahkan','Sukses');
-            return redirect()->route('backend.bumdes.produk');
-        }catch(\QueryBuilder $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
+        if ($request->hasFile('img')) {
+            $file = $request->file('img');
+            $fileName = Str::slug($request->name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/bumdes/produk'), $fileName);
+            $validated['img'] = $fileName;
         }
+
+        $validated['id'] = now()->format('YmdHis') . mt_rand(100, 999);
+        $validated['slug'] = Str::slug($request->name);
+        $validated['created_by'] = auth()->guard('admin')->user()->name;
+        $validated['desa_id'] = auth()->guard('admin')->user()->desa_id;
+
+        BumdesProduk::create($validated);
+        return redirect()->route('backend.bumdes.produk.index')->with('success', 'Produk BUMDES berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function show(BumdesProduk $produk)
     {
-        try{
-            $id = $this->decodeHash($id);
-            $data['bumdes'] = BumdesProfil::where('desa_id',Session::get('desa_id'))->get();
-            $data['produk'] = BumdesProduk::find($id);
-            return view('backend.bumdes.produk.edit',$data);
-        }catch(\Exception $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
+        return view('backend.bumdes.produk.detail', compact('produk'));
     }
 
-    public function editProccess(Request $request,$id)
+    public function edit(BumdesProduk $produk)
     {
-        try{
-            $id = $this->decodeHash($id);
-            $request['id'] = $id;
-            $this->validasiForm($request);
-            $data = $this->bindData($request);
-            $data['updated_by'] = Auth::user()->name;
-            $produk = BumdesProduk::find($id);
-            $produk->update($data);
-            toastr()->success('Data Berhasil Diubah','Sukses');
-            return redirect()->route('backend.bumdes.produk.detail',['id'=>$produk->encodeHash($produk->id)]);
-        }catch(\QueryBuilder $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
+        $bumdes = BumdesProfil::where('status', 'show')->get();
+        return view('backend.bumdes.produk.edit', compact('produk', 'bumdes'));
     }
 
-    public function detail($id)
+    public function update(Request $request, BumdesProduk $produk)
     {
-        try{
-            $id = $this->decodeHash($id);
-            $data['produk'] = BumdesProduk::find($id);
-            return view('backend.bumdes.produk.detail',$data);
-        }catch(\Exception $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
-    }
+        $validated = $request->validate([
+            'bumdes_id' => 'required|exists:ds_bumdes_profil,id',
+            'name' => ['required', 'string', 'max:255', Rule::unique('ds_bumdes_produk')->ignore($produk->id)],
+            'short_description' => 'required|string|max:191',
+            'description' => 'required|string',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
 
-    public function active(Request $request)
-    {
-        try{
-            $id = $this->decodeHash($request->id);
-            $produk = BumdesProduk::find($id);
-            $produk->update(['status' => 'show']);
-            toastr()->success('Data Berhasil diaktifkan','Sukses');
-            return redirect()->route('backend.bumdes.produk');
-        }catch(\QueryBuilder $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
-    }
-
-    public function inactive(Request $request)
-    {
-        try{
-            $id = $this->decodeHash($request->id);
-            $produk = BumdesProduk::find($id);
-            $produk->update(['status' => 'hide']);
-            toastr()->success('Data Berhasil dinonaktifkan','Sukses');
-            return redirect()->route('backend.bumdes.produk');
-        }catch(\QueryBuilder $e){
-            toastr()->error($e->getMessage(),'Gagal');
-            return back();
-        }
-    }
-
-    private function validasiForm($request)
-    {
-        if(!empty($request->id)){
-            $produk = BumdesProduk::find($request->id);
-            if($produk->noImg()){
-                $rules = ['img' => 'mimes:png,jpg,jpeg|max:2048'];
+        if ($request->hasFile('img')) {
+            if ($produk->img && File::exists(public_path('backend/images/bumdes/produk/' . $produk->img))) {
+                File::delete(public_path('backend/images/bumdes/produk/' . $produk->img));
             }
+            $file = $request->file('img');
+            $fileName = Str::slug($request->name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/bumdes/produk'), $fileName);
+            $validated['img'] = $fileName;
         }
 
-        $rules = [
-            'bumdes_id' => 'required',
-            'name' => 'required|max:191|unique:ds_bumdes_produk,name,'.$request->id,
-            'short_description' => 'required|max:150',
-            'description' => 'required',
-            'img' => 'mimes:png,jpeg,jpg',
-            'status' => 'required',
-        ];
+        $validated['slug'] = Str::slug($request->name);
+        $validated['updated_by'] = auth()->guard('admin')->user()->name;
 
-        $messages = [
-            'required' => ':attribute tidak boleh kosong',
-            'mimes' => 'Format :attribute tidak sesuai',
-            'max' => ':attribute maksimal :max karakter/kb',
-            'unique' => ':attribute sudah digunakan'
-        ];
-
-        $label = [
-            'bumdes_id' => 'BUMDES',
-            'name' => 'Produk BUMDES',
-            'short_description' => 'Deskripsi Singkat',
-            'description' => 'Deskripsi',
-            'img' => 'Foto',
-            'status' => 'Status',
-        ];
-
-        $this->validate($request,$rules,$messages,$label);
+        $produk->update($validated);
+        return redirect()->route('backend.bumdes.produk.index')->with('success', 'Produk BUMDES berhasil diperbarui.');
     }
 
-    public function bindData($request)
+    public function destroy(BumdesProduk $produk)
     {
-        if(!empty($request->id)){
-            $produk = BumdesProduk::find($request->id);
+        if ($produk->img && File::exists(public_path('backend/images/bumdes/produk/' . $produk->img))) {
+            File::delete(public_path('backend/images/bumdes/produk/' . $produk->img));
         }
+        $produk->delete();
+        return redirect()->route('backend.bumdes.produk.index')->with('success', 'Produk BUMDES berhasil dihapus.');
+    }
 
-        if($request->file('img')){
-            if(!empty($request->id)){
-                $produk = BumdesProduk::find($request->id);
-                if(\File::exists('backend/images/bumdes/produk/'.$produk->img)){
-                    \File::delete('backend/images/bumdes/produk/'.$produk->img);
-                }
-            }
-            $image = $request->file('img');
-            $destinationPath = public_path('backend/images/bumdes/produk');
-            $namaImg = strtolower(str_replace(' ','_',$request->name)).'.'.$image->getClientOriginalExtension();
-            $image->move($destinationPath,$namaImg);
-        }else{
-            if($request->id){
-                $namaImg=$produk->img;
-            }else{
-                $namaImg = null;
-            }
-        }
-
-        $data = [
-            'bumdes_id' => $request->input('bumdes_id'),
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'short_description' => $request->input('short_description'),
-            'description' => $request->input('description'),
-            'status' => $request->input('status'),
-            'img' => $namaImg,
-        ];
-
-        return $data;
+    public function toggleStatus(BumdesProduk $produk)
+    {
+        $produk->status = ($produk->status == 'show') ? 'hide' : 'show';
+        $produk->save();
+        return back()->with('success', 'Status berhasil diubah.');
     }
 }

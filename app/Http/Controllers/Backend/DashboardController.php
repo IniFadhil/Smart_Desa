@@ -39,7 +39,7 @@ class DashboardController extends Controller
             $admin = \App\Models\Admin::count();
             $userVerified = \App\Models\User::where('is_verified', 1)->count();
             $userUnverified = \App\Models\User::where('is_verified', 0)->count();
-            // $latest_surat = $this->getLatestSurat();
+            $latest_surat = $this->getLatestSurat();
 
 
             // =================================================================
@@ -68,14 +68,14 @@ class DashboardController extends Controller
             // Ambil data modul yang aktif dan diizinkan
             $moduls = Modul::where('status', 1)
                 ->whereIn('id', $allowedModulIds)
-                ->orderBy('sequence', 'asc')
+                // ->orderBy('sequence', 'asc')
                 ->get();
 
 
             // =================================================================
             // KIRIM SEMUA DATA (KONTEN + SIDEBAR) KE VIEW
             // =================================================================
-            return view('backend.dashboard.index', compact(
+            return view('backend.dashboard', compact(
                 // Data konten
                 'admin',
                 'userVerified',
@@ -140,18 +140,18 @@ class DashboardController extends Controller
         }
     }
 
-    // private function getLatestSurat()
-    // {
-    //     $suratModels = [SKTM::class, SKBN::class, SKN::class, SKP::class, SKU::class, SKM::class, SKK::class, SKSJ::class, SKRT::class, SKAW::class];
-    //     $allSurat = collect();
+    private function getLatestSurat()
+    {
+        $suratModels = [SKTM::class, SKBN::class, SKN::class, SKP::class, SKU::class, SKM::class, SKK::class, SKSJ::class, SKRT::class, SKAW::class];
+        $allSurat = collect();
 
-    //     foreach ($suratModels as $model) {
-    //         $suratData = $model::latest()->take(10)->get();
-    //         $allSurat = $allSurat->merge($suratData);
-    //     }
+        foreach ($suratModels as $model) {
+            $suratData = $model::latest()->take(10)->get();
+            $allSurat = $allSurat->merge($suratData);
+        }
 
-    //     return $allSurat->sortByDesc('created_at')->take(10);
-    // }
+        return $allSurat->sortByDesc('created_at')->take(10);
+    }
 
     private function handleFileUpload($file, ?string $oldFileName, string $path, string $prefix): string
     {

@@ -3,25 +3,30 @@
 use Illuminate\Support\Facades\Route;
 
 // --- CONTROLLER FRONTEND ---
-use App\Http\Controllers\Frontend\BerandaController;
 use App\Http\Controllers\Frontend\BumdesController;
-use App\Http\Controllers\Frontend\LoginController as FrontendLoginController;
+use App\Http\Controllers\Frontend\BerandaController;
+use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Frontend\RegisterController;
 
 // --- CONTROLLER BACKEND ---
 use App\Http\Controllers\Backend\Auth\LoginController;
-use App\Http\Controllers\Backend\DashboardController;
-use App\Http\Controllers\Backend\DataMaster\SliderController;
-use App\Http\Controllers\Backend\Informasi\AgendaController;
-use App\Http\Controllers\Backend\Informasi\BeritaController;
-use App\Http\Controllers\Backend\Informasi\InfoGrafisController;
-use App\Http\Controllers\Backend\Informasi\KomentarController;
-use App\Http\Controllers\Backend\Informasi\PengumumanController;
-use App\Http\Controllers\Backend\Manajemen\AdminController;
+use App\Http\Controllers\Backend\Potensi\ListController;
+use App\Http\Controllers\Backend\BUMDES\ProdukController;
+use App\Http\Controllers\Backend\BUMDES\ProfilController;
 use App\Http\Controllers\Backend\Manajemen\MenuController;
-use App\Http\Controllers\Backend\Manajemen\ModulController;
 use App\Http\Controllers\Backend\Manajemen\RoleController;
 use App\Http\Controllers\Backend\Manajemen\UserController;
+use App\Http\Controllers\Backend\Manajemen\AdminController;
+use App\Http\Controllers\Backend\Manajemen\ModulController;
+use App\Http\Controllers\Backend\Informasi\AgendaController;
+use App\Http\Controllers\Backend\Informasi\BeritaController;
+use App\Http\Controllers\Backend\Potensi\KategoriController;
+use App\Http\Controllers\Backend\DataMaster\SliderController;
+use App\Http\Controllers\Backend\Informasi\KomentarController;
+use App\Http\Controllers\Backend\Informasi\InfoGrafisController;
+use App\Http\Controllers\Backend\Informasi\PengumumanController;
+use App\Http\Controllers\Frontend\LoginController as FrontendLoginController;
+
 // ... (dan semua use statement Anda yang lain)
 
 /*
@@ -48,7 +53,7 @@ Route::middleware('domain')->group(function () {
     });
     Route::middleware('auth:masyarakat')->group(function () {
         Route::post('/logout', [FrontendLoginController::class, 'logout'])->name('logout');
-        Route::view('dashboard', 'dashboard')->name('dashboard');
+        // Route::view('dashboard', 'dashboard')->name('dashboard');
         Route::view('profile', 'profile')->name('profile');
     });
 
@@ -142,6 +147,29 @@ Route::middleware('domain')->group(function () {
                 Route::patch('/pengumuman/{pengumuman}/toggle-status', [PengumumanController::class, 'toggleStatus'])->name('pengumuman.toggleStatus');
             });
 
+            // GRUP BUMDES
+            Route::prefix('bumdes')->name('bumdes.')->group(function () {
+                Route::resource('profil', ProfilController::class);
+                Route::patch('/profil/{profil}/toggle-status', [ProfilController::class, 'toggleStatus'])->name('profil.toggleStatus');
+
+                Route::resource('produk', ProdukController::class);
+                Route::patch('/produk/{produk}/toggle-status', [ProdukController::class, 'toggleStatus'])->name('produk.toggleStatus');
+            });
+
+            // GRUP DATAMASTER
+            Route::prefix('datamaster')->name('datamaster.')->group(function () {
+                Route::resource('slider', SliderController::class);
+                Route::patch('/slider/{slider}/toggle-status', [SliderController::class, 'toggleStatus'])->name('slider.toggleStatus');
+            });
+
+            // GRUP POTENSI
+            Route::prefix('potensi')->name('potensi.')->group(function () {
+                Route::resource('kategori', KategoriController::class);
+                Route::patch('/kategori/{kategori}/toggle-status', [KategoriController::class, 'toggleStatus'])->name('kategori.toggleStatus');
+
+                Route::resource('list', ListController::class);
+                Route::patch('/list/{list}/toggle-status', [ListController::class, 'toggleStatus'])->name('list.toggleStatus');
+            });
             // ... (dan semua grup rute backend Anda yang lain)
         });
     });

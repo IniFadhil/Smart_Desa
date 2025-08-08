@@ -3,203 +3,106 @@
 namespace App\Http\Controllers\Backend\Potensi;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\PotensiList;
 use App\Models\PotensiKategori;
-use Str;
-use Auth;
-use Session;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ListController extends Controller
 {
-  function __construct()
-  {
-      $this->middleware('permissions:list');
-  }
+    public function index()
+    {
+        $potensis = PotensiList::with('kategori')->latest()->get();
+        return view('backend.potensi.list.list', compact('potensis'));
+    }
 
-  public function index()
-  {
-      try{
-          $data['potensi'] = PotensiList::where('desa_id',Session::get('desa_id'))->get();
-          return view('backend.potensi.list.list', $data);
-      }catch(\Exception $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+    public function create()
+    {
+        $kategoris = PotensiKategori::where('status', 'show')->get();
+        return view('backend.potensi.list.create', compact('kategoris'));
+    }
 
-  public function create()
-  {
-      try{
-          $data['kategori'] = PotensiKategori::where('desa_id',Session::get('desa_id'))->get();
-          return view('backend.potensi.list.create', $data);
-      }catch(\Exception $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'kategori_id' => 'required|exists:ds_potensi_kategori,id',
+            'name' => 'required|string|max:255|unique:ds_potensi_list,name',
+            'short_description' => 'required|string|max:191',
+            'description' => 'required|string',
+            'img' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
 
-  public function createProccess(Request $request)
-  {
-      try{
-          $this->validasiForm($request);
-          $data = $this->bindData($request);
-          $data['id'] = $this->generateAutoNumber('ds_potensi_list');
-          $data['created_by'] = Auth::user()->name;
-          $data['desa_id'] = empty(Auth::user()->desa_id)?Session::get('desa_id'):Auth::user()->desa_id;
+        if ($request->hasFile('img')) {
+            $file = $request->file('img');
+            $fileName = Str::slug($request->name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/potensi'), $fileName);
+            $validated['img'] = $fileName;
+        }
 
-          $potensi = PotensiList::create($data);
-          toastr()->success('Data Berhasil Ditambahkan','Sukses');
-          return redirect()->route('backend.potensi.list');
-      }catch(\QueryBuilder $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+        $validated['id'] = now()->format('YmdHis') . mt_rand(100, 999);
+        $validated['slug'] = Str::slug($request->name);
+        $validated['created_by'] = auth()->guard('admin')->user()->name;
+        $validated['desa_id'] = auth()->guard('admin')->user()->desa_id;
 
-  public function edit($id)
-  {
-      try{
-          $id = $this->decodeHash($id);
-          $data['kategori'] = PotensiKategori::where('desa_id',Session::get('desa_id'))->get();
-          $data['potensi'] = PotensiList::find($id);
-          return view('backend.potensi.list.edit',$data);
-      }catch(\Exception $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+        PotensiList::create($validated);
+        return redirect()->route('backend.potensi.list.index')->with('success', 'Potensi berhasil ditambahkan.');
+    }
 
-  public function editProccess(Request $request,$id)
-  {
-      try{
-          $id = $this->decodeHash($id);
-          $request['id'] = $id;
-          $this->validasiForm($request);
-          $data = $this->bindData($request);
-          $data['updated_by'] = Auth::user()->name;
-          $potensi = PotensiList::find($id);
-          $potensi->update($data);
-          toastr()->success('Data Berhasil Diubah','Sukses');
-          return redirect()->route('backend.potensi.list.detail',['id'=>$potensi->encodeHash($potensi->id)]);
-      }catch(\QueryBuilder $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+    public function show(PotensiList $list)
+    {
+        return view('backend.potensi.list.detail', ['potensi' => $list]);
+    }
 
-  public function detail($id)
-  {
-      try{
-          $id = $this->decodeHash($id);
-          $data['potensi'] = PotensiList::find($id);
-          return view('backend.potensi.list.detail',$data);
-      }catch(\Exception $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+    public function edit(PotensiList $list)
+    {
+        $kategoris = PotensiKategori::where('status', 'show')->get();
+        return view('backend.potensi.list.edit', ['potensi' => $list, 'kategoris' => $kategoris]);
+    }
 
-  public function active(Request $request)
-  {
-      try{
-          $id = $this->decodeHash($request->id);
-          $potensi = PotensiList::find($id);
-          $potensi->update(['status' => 'show']);
-          toastr()->success('Data Berhasil diaktifkan','Sukses');
-          return redirect()->route('backend.potensi.list');
-      }catch(\QueryBuilder $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+    public function update(Request $request, PotensiList $list)
+    {
+        $validated = $request->validate([
+            'kategori_id' => 'required|exists:ds_potensi_kategori,id',
+            'name' => ['required', 'string', 'max:255', Rule::unique('ds_potensi_list')->ignore($list->id)],
+            'short_description' => 'required|string|max:191',
+            'description' => 'required|string',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
 
-  public function inactive(Request $request)
-  {
-      try{
-          $id = $this->decodeHash($request->id);
-          $potensi = PotensiList::find($id);
-          $potensi->update(['status' => 'hide']);
-          toastr()->success('Data Berhasil dinonaktifkan','Sukses');
-          return redirect()->route('backend.potensi.list');
-      }catch(\QueryBuilder $e){
-          toastr()->error($e->getMessage(),'Gagal');
-          return back();
-      }
-  }
+        if ($request->hasFile('img')) {
+            if ($list->img && File::exists(public_path('backend/images/potensi/' . $list->img))) {
+                File::delete(public_path('backend/images/potensi/' . $list->img));
+            }
+            $file = $request->file('img');
+            $fileName = Str::slug($request->name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/potensi'), $fileName);
+            $validated['img'] = $fileName;
+        }
 
-  private function validasiForm($request)
-  {
-      if(!empty($request->id)){
-          $potensi = PotensiList::find($request->id);
-          if($potensi->noImg()){
-              $rules = ['img' => 'mimes:png,jpg,jpeg|max:2048'];
-          }
-      }
+        $validated['slug'] = Str::slug($request->name);
+        $validated['updated_by'] = auth()->guard('admin')->user()->name;
 
-      $rules = [
-          'kategori_id' => 'required',
-          'name' => 'required|max:191|unique:ds_potensi_list,name,'.$request->id,
-          'short_description' => 'required|max:150',
-          'description' => 'required',
-          'img' => 'mimes:png,jpeg,jpg',
-          'status' => 'required',
-      ];
+        $list->update($validated);
+        return redirect()->route('backend.potensi.list.index')->with('success', 'Potensi berhasil diperbarui.');
+    }
 
-      $messages = [
-          'required' => ':attribute tidak boleh kosong',
-          'mimes' => 'Format :attribute tidak sesuai',
-          'max' => ':attribute maksimal :max karakter/kb',
-          'unique' => ':attribute sudah digunakan'
-      ];
+    public function destroy(PotensiList $list)
+    {
+        if ($list->img && File::exists(public_path('backend/images/potensi/' . $list->img))) {
+            File::delete(public_path('backend/images/potensi/' . $list->img));
+        }
+        $list->delete();
+        return redirect()->route('backend.potensi.list.index')->with('success', 'Potensi berhasil dihapus.');
+    }
 
-      $label = [
-          'kategori_id' => 'Kategori',
-          'name' => 'Potensi',
-          'short_description' => 'Deskripsi Singkat',
-          'description' => 'Deskripsi',
-          'img' => 'Foto',
-          'status' => 'Status',
-      ];
-
-      $this->validate($request,$rules,$messages,$label);
-  }
-
-  public function bindData($request)
-  {
-      if(!empty($request->id)){
-          $potensi = PotensiList::find($request->id);
-      }
-
-      if($request->file('img')){
-          if(!empty($request->id)){
-              $potensi = PotensiList::find($request->id);
-              if(\File::exists('backend/images/potensi/'.$potensi->img)){
-                  \File::delete('backend/images/potensi/'.$potensi->img);
-              }
-          }
-          $image = $request->file('img');
-          $destinationPath = public_path('backend/images/potensi');
-          $namaImg = strtolower(str_replace(' ','_',$request->name)).'.'.$image->getClientOriginalExtension();
-          $image->move($destinationPath,$namaImg);
-      }else{
-          if($request->id){
-              $namaImg=$potensi->img;
-          }else{
-              $namaImg = null;
-          }
-      }
-
-      $data = [
-          'kategori_id' => $request->input('kategori_id'),
-          'name' => $request->input('name'),
-          'slug' => Str::slug($request->input('name')),
-          'short_description' => $request->input('short_description'),
-          'description' => $request->input('description'),
-          'status' => $request->input('status'),
-          'img' => $namaImg,
-      ];
-
-      return $data;
-  }
+    public function toggleStatus(PotensiList $list)
+    {
+        $list->status = ($list->status == 'show') ? 'hide' : 'show';
+        $list->save();
+        return back()->with('success', 'Status berhasil diubah.');
+    }
 }

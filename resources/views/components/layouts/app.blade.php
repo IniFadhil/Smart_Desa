@@ -250,7 +250,27 @@
             {{-- PERBAIKAN DI SINI: Tombol Login/Logout dikembalikan --}}
             {{-- ====================================================== --}}
             <div class="mt-6">
-                @guest('admin')
+                @auth('masyarakat')
+                    {{-- JIKA USER (MASYARAKAT) SUDAH LOGIN, TAMPILKAN INI --}}
+                    <div class="text-center mb-4 px-3">
+                        <p class="text-sm font-semibold truncate">{{ Auth::guard('masyarakat')->user()->nama_lengkap }}
+                        </p>
+                        <a href="{{ route('profile') }}" class="text-xs text-green-300 hover:underline">Lihat Profil</a>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();"
+                            class="flex items-center space-x-2 block py-2 px-3 rounded hover:bg-red-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
+                            </svg>
+                            <span>LOGOUT</span>
+                        </a>
+                    </form>
+                @else
+                    {{-- JIKA PENGUNJUNG BIASA (BELUM LOGIN), TAMPILKAN INI --}}
                     <a href="{{ route('login') }}"
                         class="flex items-center space-x-2 block py-2 px-3 rounded hover:bg-green-700">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,21 +281,6 @@
                         <span>LOGIN</span>
                     </a>
                 @endguest
-                @auth('admin')
-                    <form method="POST" action="{{ route('backend.auth.logout') }}">
-                        @csrf
-                        <a href="{{ route('backend.auth.logout') }}"
-                            onclick="event.preventDefault(); this.closest('form').submit();"
-                            class="flex items-center space-x-2 block py-2 px-3 rounded hover:bg-red-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                                </path>
-                            </svg>
-                            <span>LOGOUT</span>
-                        </a>
-                    </form>
-                @endauth
             </div>
         </aside>
 

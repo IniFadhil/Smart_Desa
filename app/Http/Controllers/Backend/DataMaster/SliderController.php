@@ -3,180 +3,95 @@
 namespace App\Http\Controllers\Backend\DataMaster;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Slider;
-use Str;
-use Auth;
-use Session;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class SliderController extends Controller
 {
-    function __construct()
-    {
-        $this->middleware('permissions:slider');
-    }
-
     public function index()
     {
-        try {
-            $data['slider'] = Slider::where('desa_id', Session::get('desa_id'))->get();
-            return view('backend.datamaster.slider.list', $data);
-        } catch (\Exception $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
-        }
+        $sliders = Slider::latest()->get();
+        return view('backend.datamaster.slider.list', compact('sliders'));
     }
+
     public function create()
     {
-        try {
-            return view('backend.datamaster.slider.create');
-        } catch (\Exception $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
-        }
+        return view('backend.datamaster.slider.create');
     }
-    public function createProccess(Request $request)
+
+    public function store(Request $request)
     {
-        try {
-            $slider = Slider::where('desa_id', Session::get('desa_id'))->first();
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'img' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
 
-            $rules = [
-                'description' => 'required',
-                //'img' => 'mimes:jpg,jpeg,png',
-            ];
+        if ($request->hasFile('img')) {
+            $file = $request->file('img');
+            $fileName = 'slider_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/slider'), $fileName);
+            $validated['img'] = $fileName;
+        }
 
-            $messages = [
-                'required' => ':attribute tidak boleh kosong',
-                'mimes' => 'Format :attribute tidak sesuai',
-                'max' => ':attribute maksimal :max kb',
-                'unique' => ':attribute sudah digunakan'
-            ];
+        $validated['id'] = now()->format('YmdHis') . mt_rand(100, 999);
+        $validated['uploaded_by'] = auth()->guard('admin')->user()->name;
+        $validated['desa_id'] = auth()->guard('admin')->user()->desa_id;
 
-            $label = [
-                'description' => 'Deskripsi',
-                'img' => 'Gambar Struktur Organisasi',
-            ];
+        Slider::create($validated);
+        return redirect()->route('backend.datamaster.slider.index')->with('success', 'Slider berhasil ditambahkan.');
+    }
 
-            if ($request->file('img')) {
-                if (!empty($slider)) {
-                    if (\File::exists('backend/images/slider/' . $slider->img)) {
-                        \File::delete('backend/images/slider/' . $slider->img);
-                    }
-                }
-                $img = $request->file('img');
-                $destinationPath = public_path('backend/images/slider');
-                $gambar = 'slider_' . date('YmdHis') . '.' . $img->getClientOriginalExtension();
-                $img->move($destinationPath, $gambar);
-            } else {
-                if (!empty($slider->img)) {
-                    $gambar = $slider->img;
-                } else {
-                    $gambar = null;
-                }
+    public function show(Slider $slider)
+    {
+        return view('backend.datamaster.slider.detail', compact('slider'));
+    }
+
+    public function edit(Slider $slider)
+    {
+        return view('backend.datamaster.slider.edit', compact('slider'));
+    }
+
+    public function update(Request $request, Slider $slider)
+    {
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'status' => 'required|in:show,hide',
+        ]);
+
+        if ($request->hasFile('img')) {
+            if ($slider->img && File::exists(public_path('backend/images/slider/' . $slider->img))) {
+                File::delete(public_path('backend/images/slider/' . $slider->img));
             }
-
-            $this->validate($request, $rules, $messages, $label);
-
-            $data = [
-                'id' => $this->generateAutoNumber('ds_slider'),
-                'desa_id' => Session::get('desa_id'),
-                'description' => $request->description,
-                'uploaded_by' => Auth::user()->name,
-                'img' => $gambar,
-            ];
-
-            //insert
-            $create = Slider::create($data);
-            toastr()->success('Data Berhasil dtambahkan', 'Sukses');
-            return redirect()->route('backend.datamaster.slider');
-        } catch (\Exception $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
+            $file = $request->file('img');
+            $fileName = 'slider_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('backend/images/slider'), $fileName);
+            $validated['img'] = $fileName;
         }
+
+        $validated['uploaded_by'] = auth()->guard('admin')->user()->name;
+
+        $slider->update($validated);
+        return redirect()->route('backend.datamaster.slider.index')->with('success', 'Slider berhasil diperbarui.');
     }
-    public function edit($id)
+
+    public function destroy(Slider $slider)
     {
-        try {
-            $id = $this->decodeHash($id);
-            $data['slider'] = Slider::find($id);
-            return view('backend.datamaster.slider.edit', $data);
-        } catch (\QueryBuilder $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
+        if ($slider->img && File::exists(public_path('backend/images/slider/' . $slider->img))) {
+            File::delete(public_path('backend/images/slider/' . $slider->img));
         }
+        $slider->delete();
+        return redirect()->route('backend.datamaster.slider.index')->with('success', 'Slider berhasil dihapus.');
     }
-    public function editProccess(Request $request, $id)
+
+    public function toggleStatus(Slider $slider)
     {
-        try {
-            $id = $this->decodeHash($id);
-            $slider = Slider::where('desa_id', Session::get('desa_id'))->where('id', $id)->first();
-
-            $rules = [
-                'description' => 'required',
-                //   'img' => 'mimes:jpg,jpeg,png',
-            ];
-
-            $messages = [
-                'required' => ':attribute tidak boleh kosong',
-                'mimes' => 'Format :attribute tidak sesuai',
-                'max' => ':attribute maksimal :max kb',
-                'unique' => ':attribute sudah digunakan'
-            ];
-
-            $label = [
-                'description' => 'Deskripsi',
-                'img' => 'Gambar Struktur Organisasi',
-            ];
-
-            if ($request->file('img')) {
-                if (!empty($slider)) {
-                    if (\File::exists('backend/images/slider/' . $slider->img)) {
-                        \File::delete('backend/images/slider/' . $slider->img);
-                    }
-                }
-                $img = $request->file('img');
-                $destinationPath = public_path('backend/images/slider');
-                $gambar = 'slider_' . date('YmdHis') . '.' . $img->getClientOriginalExtension();
-                $img->move($destinationPath, $gambar);
-            } else {
-                if (!empty($slider->img)) {
-                    $gambar = $slider->img;
-                } else {
-                    $gambar = null;
-                }
-            }
-
-            $this->validate($request, $rules, $messages, $label);
-
-            $data = [
-                'description' => $request->description,
-                'uploaded_by' => Auth::user()->name,
-                'img' => $gambar,
-            ];
-
-            //insert
-            $slider->update($data);
-            toastr()->success('Data Berhasil Diubah', 'Sukses');
-            return redirect()->route('backend.datamaster.slider');
-        } catch (\QueryBuilder $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
-        }
-    }
-    public function delete(Request $request)
-    {
-        try {
-            $id = $this->decodeHash($request->id);
-            $gambar = Slider::find($id);
-            if (\File::exists('backend/images/slider/' . $gambar->img)) {
-                \File::delete('backend/images/slider/' . $gambar->img);
-            }
-            $gambar->delete();
-            toastr()->success('Data Berhasil dihapus', 'Sukses');
-            return redirect()->route('backend.datamaster.slider');
-        } catch (\QueryBuilder $e) {
-            toastr()->error($e->getMessage(), 'Gagal');
-            return back();
-        }
+        $slider->status = ($slider->status == 'show') ? 'hide' : 'show';
+        $slider->save();
+        return back()->with('success', 'Status slider berhasil diubah.');
     }
 }
